@@ -75,8 +75,8 @@ def create_user():
 
         # Query database
         insertion = connect.execute(
-            "INSERT INTO users(username, firstname, lastname, email, filename, password, patient, role)"
-            "VALUES (?, ?, ?, ?, ?, ?, ? , ?)",
+            "INSERT INTO users(username, firstname, lastname, email, filename, password, patient, role) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ",
             (username, request.form["firstname"], request.form["lastname"], request.form["email"],
                 'e', password_db_string, request.form["patient"], request.form["role"])
                 # replace 'e' with uuid_basename later
@@ -111,7 +111,7 @@ def login():
         if len(users) == 0:
             abort(403)
 
-        pswd = connection.execute(
+        pswd = connect.execute(
             "SELECT password "
             "FROM users "
             "WHERE username = ?",(username,)
@@ -188,7 +188,7 @@ def edit_password():
         password_hash = hash_obj.hexdigest()
         password_db_string = "$".join([algorithm, salt, password_hash])
 
-        connection.execute(
+        connect.execute(
             "UPDATE users "
             "SET password = ? "
             "WHERE username = ? ", (password_db_string, flask.session["user"],)
