@@ -1,0 +1,8 @@
+#!/bin/bash
+set -Eeou pipefail
+
+export FLASK_ENV=development
+FLASK_ENV=development
+export FLASK_APP=ICUDiary
+FLASK_APP=ICUDiary
+flask run --host 0.0.0.0 --port 8000

@@ -1,8 +1,8 @@
 {
-  "name": "insta485",
+  "name": "ICUDiary",
   "version": "0.1.0",
-  "description": "insta485 front end",
-  "main": "insta485/js/main.jsx",
+  "description": "ICUDiary front end",
+  "main": "ICUDiary/js/main.jsx",
   "author": "awdeorio",
   "license": "MIT",
   "repository": {},

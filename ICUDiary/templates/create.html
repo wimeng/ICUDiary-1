@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ICUDiary</title>
+</head>
+<body>
+    <h1>
+        <a href="/">LOGO</a> | <span>ICUDiary</span>
+        <span style = float:right>
+            <a href="/accounts/login/"><b>login</b></a>
+        </span>
+    </h1>
+    <hr>
+    <br>
+    <form action="/accounts/create/" method="post" enctype="multipart/form-data">
+        <span>Photo </span><input type="file" name="file">
+        <br>
+        <span>Name </span><input type="text" name="fullname"/>
+        <br>
+        <span>Username </span><input type="text" name="username"/>
+        <br>
+        <span>Email </span><input type="text" name="email"/>
+        <br>
+        <span>Password </span><input type="password" name="password"/>
+        <br>
+        <input type="submit" name="signup" value="sign up"/>
+        <br>
+    </form>
+    <p>
+        Have an account? <a href="/accounts/login/"><b>Log in</b></a>
+    </p>
+</body>
+</html>

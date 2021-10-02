@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ICUDiary</title>
+</head>
+<body>
+    <h1>
+        <a href="/">LOGO</a> | <span>ICUDiary</span>
+        <span style = float:right>
+            <b>login</b>
+        </span>
+    </h1>
+    <hr>
+    <br>
+    <form action="/accounts/login/" method="post" enctype="multipart/form-data">
+        <input type="text" placeholder= "username" name="username"/>
+        <br>
+        <input type="password" placeholder = "password" name="password"/>
+        <br>
+        <input type="submit" value="login"/>
+        <br>
+    </form>
+    <p>
+        Don't have an account <a href="/accounts/create/"><b>Sign up</b></a>
+    </p>
+</body>
+</html>
