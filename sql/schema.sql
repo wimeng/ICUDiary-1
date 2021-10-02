@@ -8,8 +8,7 @@ CREATE TABLE users(
   filename VARCHAR(64) NOT NULL,
   password VARCHAR(256) NOT NULL,
   patient VARCHAR(20) NOT NULL,
-  role VARCHAR(30) NOT NULL,
-  PRIMARY KEY(username)
+  role VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE entries(

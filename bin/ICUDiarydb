@@ -1,0 +1,51 @@
+#!/bin/bash
+# ICUDiarydb
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Usage check
+if [[ $# -ne 1 ]]; then
+	echo "Usage: ./bin/ICUDiarydb (create|destroy|reset|dump)"
+	exit 1
+fi
+
+# Parse arguments
+# create
+if [[ "$1" == "create" ]]; then
+	# Check if database already exists
+	if [ -d "var/uploads" ]; then
+		echo "Error: database already exists"
+		exit 1
+	fi
+
+	# Create database
+	mkdir -p var/uploads
+	sqlite3 var/ICUDiary.sqlite3 < sql/schema.sql
+	sqlite3 var/ICUDiary.sqlite3 < sql/data.sql
+	cp sql/uploads/* var/uploads/
+
+# destroy
+elif [[ "$1" == "destroy" ]]; then
+	rm -rf var/ICUDiary.sqlite3 var/uploads
+
+# reset
+elif [[ "$1" == "reset" ]]; then
+	rm -rf var/ICUDiary.sqlite3 var/uploads
+	mkdir -p var/uploads
+	sqlite3 var/ICUDiary.sqlite3 < sql/schema.sql
+	cp sql/uploads/* var/uploads/
+
+# dump
+elif [[ "$1" == "dump" ]]; then
+	sqlite3 -batch -line var/ICUDiary.sqlite3 'SELECT * FROM comments'
+	sqlite3 -batch -line var/ICUDiary.sqlite3 'SELECT * FROM following'
+	sqlite3 -batch -line var/ICUDiary.sqlite3 'SELECT * FROM likes'
+	sqlite3 -batch -line var/ICUDiary.sqlite3 'SELECT * FROM posts'
+	sqlite3 -batch -line var/ICUDiary.sqlite3 'SELECT * FROM users'
+
+# Unknown argument
+else
+        echo "Usage: ./bin/ICUDiarydb (create|destroy|reset|dump)"
+        exit 1
+fi

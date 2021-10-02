@@ -39,7 +39,7 @@ def create_user():
         users = user.fetchall()
 
         # check if user already exists
-        if leb(users) > 0:
+        if len(users) > 0:
             abort(409)
 
         # check for empty password
@@ -56,29 +56,30 @@ def create_user():
         password_db_string = "$".join([algorithm, salt, password_hash])
 
         # Unpack flask object
-        fileobject = request.files["file"]
-        filename = fileobject.filename
+        """ fileobject = request.files["file"]
+        filename = fileobject.filename """
 
         # Compute base name (filename without directory).
         # We use a UUID to avoid
         # clashes with existing files,
         # and ensure that the name is compatible with the
         # filesystem.
-        uuid_basename = "{stem}{suffix}".format(
+        """ uuid_basename = "{stem}{suffix}".format(
             stem=uuid.uuid4().hex,
             suffix=pathlib.Path(filename).suffix
-        )
+        ) """
 
         # Save to disk
-        path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
-        fileobject.save(path)
+        # path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+        # fileobject.save(path)
 
         # Query database
-        insertion = connection.execute(
-            "INSERT INTO users(username, firstname, lastname, email, filename, password)"
-            "VALUES (?, ?, ?, ?, ?, ?)",
+        insertion = connect.execute(
+            "INSERT INTO users(username, firstname, lastname, email, filename, password, patient, role)"
+            "VALUES (?, ?, ?, ?, ?, ?, ? , ?)",
             (username, request.form["firstname"], request.form["lastname"], request.form["email"],
-                uuid_basename, password_db_string)
+                'e', password_db_string, request.form["patient"], request.form["role"])
+                # replace 'e' with uuid_basename later
         )
 
         flask.session["user"] = username

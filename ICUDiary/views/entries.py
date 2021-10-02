@@ -21,7 +21,7 @@ def newentry():
 def archive():
     """Send file."""
 
-    # authenticate that only patient can view archive
+    # authenticate that only patient and superuser can view archive
     curr_user = flask.session["user"]
     connect = ICUDiary.model.get_db()
 
@@ -32,6 +32,7 @@ def archive():
     )
     
     curr_patient = patient.fetchall()
+
 
     if curr_patient != curr_user:
         abort(403)
