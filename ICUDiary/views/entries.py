@@ -11,30 +11,40 @@ from flask import request
 from flask import abort
 import ICUDiary
 from ICUDiary import config
+from ICUDiary.views.accounts import logged
 
 @ICUDiary.app.route("/newentry/")
 def newentry():
     """Send file."""
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
     return flask.render_template("recording.html")
 
 @ICUDiary.app.route("/archive/")
 def archive():
     """Send file."""
 
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
+
     # authenticate that only patient and superuser can view archive
-    curr_user = flask.session["user"]
     connect = ICUDiary.model.get_db()
 
-    patient = connect.execute(
-        "SELECT patient "
+    role = connect.execute(
+        "SELECT role "
         "FROM users "
-        "WHERE username = ?", (curr_user,)
+        "WHERE username = ?", (flask.session["user"],)
     )
     
-    curr_patient = patient.fetchall()
+    curr_role = role.fetchall()[0]['role']
+    print(curr_role)
 
-
-    if curr_patient != curr_user:
+    if curr_role == "User":
         abort(403)
 
     return flask.render_template("archive.html")
+
+
+# def logged():
+#     """User logged in check."""
+#     return "user" in flask.session

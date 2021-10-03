@@ -75,14 +75,41 @@ def create_user():
 
         # Query database
         insertion = connect.execute(
-            "INSERT INTO users(username, firstname, lastname, email, filename, password, patient, role) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ",
+            "INSERT INTO users(username, firstname, lastname, email, filename, password, role) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?) ",
             (username, request.form["firstname"], request.form["lastname"], request.form["email"],
-                'e', password_db_string, request.form["patient"], request.form["role"])
+                'e', password_db_string, request.form["role"])
                 # replace 'e' with uuid_basename later
         )
 
         flask.session["user"] = username
+        print('role is', request.form['role'])
+        if request.form["role"] == "Patient":
+            # generate patient and superuser codes
+            patient_hash = hashlib.new(algorithm)
+            patient_hash.update(username.encode('utf-8'))
+            patientcode = patient_hash.hexdigest()[0:12].upper()
+            connect.execute(
+            "INSERT INTO patient(username, patientcode) "
+            "VALUES (?, ?) ",
+            (username, patientcode)
+            )
+
+            superuser_hash = hashlib.new(algorithm)
+            superuser_hash.update(('super' + username).encode('utf-8'))
+            superusercode = superuser_hash.hexdigest()[0:12].upper()
+            connect.execute(
+            "INSERT INTO superuser(superusername, superusercode) "
+            "VALUES (?, ?) ",
+            (username, superusercode)
+            )
+            return flask.redirect("/showcodes/")
+        elif request.form["role"] == "Superuser":
+            return flask.redirect("/accounts/superuser/")
+        else:
+            return flask.redirect("/accounts/patientcode/")
+            pass
+            
         return flask.redirect("/")
 
     return flask.render_template("create.html")
@@ -109,7 +136,7 @@ def login():
         users = user.fetchall()
 
         if len(users) == 0:
-            abort(403)
+            abort(403) # change to reload login page with error message
 
         pswd = connect.execute(
             "SELECT password "
@@ -217,3 +244,98 @@ def logout():
 def logged():
     """User logged in check."""
     return "user" in flask.session
+
+@ICUDiary.app.route('/showcodes/', methods=['GET'])
+def showcodes():
+    connect = ICUDiary.model.get_db()
+    patientcodeinfo = connect.execute(
+        "SELECT patientcode "
+        "FROM patient "
+        "WHERE username = ?",(flask.session['user'],)
+    )
+    patientcode = patientcodeinfo.fetchall()[0]['patientcode']
+    
+    superusercodeinfo = connect.execute(
+        "SELECT superusercode "
+        "FROM superuser "
+        "WHERE superusername = ?",(flask.session['user'],)
+    )
+    superusercode = superusercodeinfo.fetchall()[0]['superusercode']
+    
+    context = {"patientcode": patientcode, "superusercode": superusercode}
+
+    return flask.render_template("showcodes.html", **context)
+
+@ICUDiary.app.route('/accounts/superuser/', methods=['POST', 'GET'])
+def superuser():
+    """Superuser authentication."""
+    if request.method == "POST":
+        pcode = request.form["patientcode"]
+        scode = request.form["superusercode"]
+
+        connect = ICUDiary.model.get_db()
+
+        patientcode = connect.execute(
+            "SELECT patientcode "
+            "FROM patient "
+            "WHERE patientcode = ?",(pcode,)
+        )
+
+        matching_pcode = patientcode.fetchall()
+        
+        if len(matching_pcode) == 0:
+            # no matching patient
+            flask.session.clear()
+            return flask.redirect("/accounts/login/")
+
+        superusercode = connect.execute(
+            "SELECT superusercode "
+            "FROM superuser "
+            "WHERE superusercode = ?",(scode,)
+        )
+        
+        matching_scode = superusercode.fetchall()
+        
+        if len(matching_scode) == 0:
+            # no matching superuser
+            flask.session.clear()
+            return flask.redirect("/accounts/login/")
+
+        insertion = connect.execute(
+            "INSERT INTO patient(username, patientcode) "
+            "VALUES (?, ?) ",
+            (flask.session["user"], pcode)
+        )
+        return flask.redirect("/")
+    
+    return flask.render_template("superuser.html")
+
+@ICUDiary.app.route('/accounts/patientcode/', methods=['POST', 'GET'])
+def patientcode():
+    """Patient account association."""
+    if request.method == "POST":
+        pcode = request.form["patientcode"]
+
+        connect = ICUDiary.model.get_db()
+
+        patientcode = connect.execute(
+            "SELECT patientcode "
+            "FROM patient "
+            "WHERE patientcode = ?",(pcode,)
+        )
+
+        matching_pcode = patientcode.fetchall()
+        
+        if len(matching_pcode) == 0:
+            # no matching patient
+            flask.session.clear()
+            return flask.redirect("/accounts/login/")
+
+        insertion = connect.execute(
+            "INSERT INTO patient(username, patientcode) "
+            "VALUES (?, ?) ",
+            (flask.session["user"], pcode)
+        )
+        return flask.redirect("/")
+
+    return flask.render_template("patientcode.html")
