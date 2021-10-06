@@ -15,7 +15,7 @@ def file_func(file):
     """Send file."""
     if logged() is False:
         abort(403)
-    return flask.send_from_directory(config.UPLOAD_FOLDER,  file)
+    return flask.send_from_directory(ICUDiary.app.config["UPLOAD_FOLDER"],  file)
 
 
 @ICUDiary.app.route("/")

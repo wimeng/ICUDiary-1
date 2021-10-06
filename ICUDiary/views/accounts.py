@@ -22,8 +22,8 @@ def create_user():
     """Create page."""
     # gets username, password, stores into session object,
     # and redirect to / page
-    # check that username exists
-    # and password matches, otherwise abort(403)
+    # check if username already exists
+    # and password is not empty, otherwise abort(403)
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -56,34 +56,33 @@ def create_user():
         password_db_string = "$".join([algorithm, salt, password_hash])
 
         # Unpack flask object
-        """ fileobject = request.files["file"]
-        filename = fileobject.filename """
+        fileobject = request.files["file"]
+        filename = fileobject.filename
 
         # Compute base name (filename without directory).
         # We use a UUID to avoid
         # clashes with existing files,
         # and ensure that the name is compatible with the
         # filesystem.
-        """ uuid_basename = "{stem}{suffix}".format(
+        uuid_basename = "{stem}{suffix}".format(
             stem=uuid.uuid4().hex,
             suffix=pathlib.Path(filename).suffix
-        ) """
+        )
 
         # Save to disk
-        # path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
-        # fileobject.save(path)
+        path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+        fileobject.save(path)
 
         # Query database
         insertion = connect.execute(
             "INSERT INTO users(username, firstname, lastname, email, filename, password, role) "
             "VALUES (?, ?, ?, ?, ?, ?, ?) ",
             (username, request.form["firstname"], request.form["lastname"], request.form["email"],
-                'e', password_db_string, request.form["role"])
+                uuid_basename, password_db_string, request.form["role"])
                 # replace 'e' with uuid_basename later
         )
 
         flask.session["user"] = username
-        print('role is', request.form['role'])
         if request.form["role"] == "Patient":
             # generate patient and superuser codes
             patient_hash = hashlib.new(algorithm)
@@ -166,13 +165,13 @@ def login():
     else:
         return flask.render_template("login.html")
 
-""" @ICUDiary.app.route('/accounts/password/', methods=['POST', 'GET'])
+@ICUDiary.app.route('/accounts/password/', methods=['POST', 'GET'])
 def edit_password():
-    Edit pass page.
-    if not_logged is False:
+    """Edit pass page."""
+    if logged() is False:
         return flask.redirect("accounts/login/")
 
-    connection = ICUDiary.model.get_db()
+    connect = ICUDiary.model.get_db()
     # gets username, password, stores into
     # session object, and redirect to / page
     # check that username exists and password
@@ -182,10 +181,10 @@ def edit_password():
         new_password = request.form["new_password"]
         new_password2 = request.form["new_password_check"]
 
-        if new_password != new_password_check:
+        if new_password != new_password2:
             abort(401)
 
-        cur_pass = connection.execute(
+        cur_pass = connect.execute(
             "SELECT password "
             "FROM users "
             "WHERE username = ? ", (flask.session["user"],)
@@ -226,9 +225,84 @@ def edit_password():
         "logname": flask.session["user"]
     }
     return flask.render_template("password.html", **context)
+@ICUDiary.app.route('/accounts/edit/', methods=['GET', 'POST'])
 
+def edit():
+    """Edit user page."""
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
+    # Connect to database
+    connect = ICUDiary.model.get_db()
+    if request.method == "POST":
+        photoicon = request.files["file"]
+        first_name = request.form["firstname"]
+        last_name = request.form["lastname"]
+        email = request.form["email"]
 
- """
+        if photoicon.filename:
+
+            cur = connect.execute(
+                "SELECT filename FROM users "
+                "WHERE username = ? ", (flask.session["user"],)
+            )
+
+            to_delete = cur.fetchone()
+            os.remove((config.UPLOAD_FOLDER) / to_delete['filename'])
+
+            fileobj = request.files["file"]
+            filename = fileobj.filename
+            # Compute base name (filename without directory).
+            # We use a UUID to avoid
+            # clashes with existing files, and ensure
+            # that the name is compatible with the
+            # filesystem.
+            uuid_basename = "{stem}{suffix}".format(
+                stem=uuid.uuid4().hex,
+                suffix=pathlib.Path(filename).suffix
+            )
+            # Save to disk
+            path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobj.save(path)
+
+            cur = connect.execute(
+                "UPDATE users "
+                "SET filename = ? "
+                "WHERE username = ? ", (uuid_basename, flask.session["user"],)
+            ) 
+        if first_name:
+            cur = connect.execute(
+                "UPDATE users "
+                "SET firstname = ? "
+                "WHERE username = ? ", (first_name, flask.session["user"],)
+            )
+        if last_name:
+            cur = connect.execute(
+                "UPDATE users "
+                "SET lastname = ? "
+                "WHERE username = ? ", (last_name, flask.session["user"],)
+            )
+        if email:
+            cur = connect.execute(
+                "UPDATE users "
+                "SET email = ? "
+                "WHERE username = ? ", (email, flask.session["user"],)
+            )
+
+    cur = connect.execute(
+        "SELECT firstname, lastname, email, filename FROM users "
+        "WHERE username = ? ", (flask.session["user"],)
+    )
+    photo = cur.fetchall()
+    # delete image in uploads folder and add new image
+    context = {
+        "filename": photo[0]["filename"],
+        "firstname": photo[0]["firstname"],
+        "lastname": photo[0]["lastname"],
+        "email": photo[0]["email"],
+        "logname": flask.session["user"]
+    }
+
+    return flask.render_template("edit.html", **context)
 
 @ICUDiary.app.route('/accounts/logout/', methods=['POST', 'GET'])
 def logout():
@@ -261,8 +335,15 @@ def showcodes():
         "WHERE superusername = ?",(flask.session['user'],)
     )
     superusercode = superusercodeinfo.fetchall()[0]['superusercode']
+
+    pictureinfo = connect.execute(
+        "SELECT filename "
+        "FROM users "
+        "WHERE username = ?",(flask.session['user'],)
+    )
+    picture = pictureinfo.fetchall()[0]['filename']
     
-    context = {"patientcode": patientcode, "superusercode": superusercode}
+    context = {"patientcode": patientcode, "superusercode": superusercode, "filename": picture}
 
     return flask.render_template("showcodes.html", **context)
 
@@ -339,3 +420,8 @@ def patientcode():
         return flask.redirect("/")
 
     return flask.render_template("patientcode.html")
+
+
+def logged():
+    """User logged in check."""
+    return "user" in flask.session
