@@ -13,6 +13,7 @@ SESSION_COOKIE_NAME = 'login'
 # File Upload to var/uploads/
 ICUDIARY_ROOT = pathlib.Path(__file__).resolve().parent.parent
 UPLOAD_FOLDER = ICUDIARY_ROOT/'var'/'uploads'
+STATIC_FOLDER = ICUDIARY_ROOT/'ICUDiary'/'static'/'image'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 

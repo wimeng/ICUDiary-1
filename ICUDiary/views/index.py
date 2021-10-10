@@ -17,6 +17,11 @@ def file_func(file):
         abort(403)
     return flask.send_from_directory(ICUDiary.app.config["UPLOAD_FOLDER"],  file)
 
+@ICUDiary.app.route("/image/<file>")
+def static_func(file):
+    """Send file."""
+    return flask.send_from_directory(ICUDiary.app.config["STATIC_FOLDER"],  file)
+
 
 @ICUDiary.app.route("/")
 def home():
