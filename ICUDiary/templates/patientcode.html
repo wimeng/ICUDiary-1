@@ -1,18 +1,10 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <h1>
-        <a href="/"><img src="{{url_for('file_func', file = 'DiaryLogo.png')}}"></a> | <span>ICYou</span>
-        <span style = float:right>
-            <a href="/accounts/login/"><b>Request</b></a>
-        </span>
-    </h1>
-    <hr>
-    <br>
     <form action="/accounts/patientcode/" method="post" enctype="multipart/form-data">
         <span>Patient Code </span><input type="text" name="patientcode">
         <br>
-        <input type="submit" name="signup" value="sign up"/>
+        <input type="submit" name="signup" value="submit"/>
         <br>
     </form>
 {% endblock %}}

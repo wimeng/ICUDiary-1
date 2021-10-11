@@ -8,12 +8,6 @@
     <body>
         <h1 class="p-3 mb-2 bg-info text-white">
             <a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> | <span>ICYou</span>
-            <span style="margin-left:20px; color:darkblue">{% if patient %}{{patient}}'s diary {% endif %}</span>
-            <span style="float:right">
-                <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
-                    <input type="submit" name="logout" value="Logout"/>
-                </form>
-            </span>
         </h1>
         <hr>
         <br>

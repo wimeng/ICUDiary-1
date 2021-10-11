@@ -4,15 +4,15 @@
         <div class="d-grid gap-2 col-6 mx-auto my-auto">
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/newentry/"><b class = "h1">Make an entry</b></a>
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/archive/"><b class = "h1">View archive</b></a>
+            {% if role == 'User' %}
+            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/accounts/patientcode/"><b class = "h1">Enter patient codes</b></a>
+            {% else %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/showcodes/"><b class = "h1">Access codes</b></a>
+            {% endif %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href= "/accounts/edit/"><b class = "h1">Edit profile</b></a>
         </div>
     <br>
 
-    <p>
-        <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
-          <input type="submit" name="logout" value="Logout"/>
-        </form>
-    </p>
+    
 
 {% endblock %}

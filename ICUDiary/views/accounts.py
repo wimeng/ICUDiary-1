@@ -17,6 +17,12 @@ import ICUDiary
 from ICUDiary import config
 
 
+def common_context():
+    context = {'patient': ''}
+    if 'patient' in flask.session:
+        context['patient'] = flask.session['patient']
+    return context
+
 @ICUDiary.app.route('/accounts/create/', methods=['POST', 'GET'])
 def create_user():
     """Create page."""
@@ -98,7 +104,7 @@ def create_user():
             superuser_hash.update(('super' + username).encode('utf-8'))
             superusercode = superuser_hash.hexdigest()[0:12].upper()
             connect.execute(
-            "INSERT INTO superuser(superusername, superusercode) "
+            "INSERT INTO superuser(username, superusercode) "
             "VALUES (?, ?) ",
             (username, superusercode)
             )
@@ -160,6 +166,24 @@ def login():
 
         # store user as current user
         flask.session["user"] = username
+
+        # set current patient being looked at
+        my_patientcode = connect.execute(
+            "SELECT patientcode FROM patient "
+            "WHERE username = ? ",
+            (flask.session['user'],)
+        ).fetchone()['patientcode']
+
+        patientname = connect.execute(
+            "SELECT firstname, lastname from users "
+            "JOIN patient ON (patient.username = users.username) "
+            "WHERE patientcode = ? AND role = 'Patient'",
+            (my_patientcode,)
+        ).fetchone()
+
+        patient = patientname['firstname'] + ' ' + patientname['lastname']
+        flask.session['patient'] = patient
+
         return flask.redirect("/")
         
     else:
@@ -170,6 +194,8 @@ def edit_password():
     """Edit pass page."""
     if logged() is False:
         return flask.redirect("accounts/login/")
+
+    context = common_context()
 
     connect = ICUDiary.model.get_db()
     # gets username, password, stores into
@@ -221,9 +247,7 @@ def edit_password():
         )
         return flask.redirect("/accounts/edit/")
 
-    context = {
-        "logname": flask.session["user"]
-    }
+    context["logname"] = flask.session["user"]
     return flask.render_template("password.html", **context)
 @ICUDiary.app.route('/accounts/edit/', methods=['GET', 'POST'])
 
@@ -233,6 +257,7 @@ def edit():
         return flask.redirect("/accounts/login/")
     # Connect to database
     connect = ICUDiary.model.get_db()
+    context = common_context()
     if request.method == "POST":
         photoicon = request.files["file"]
         first_name = request.form["firstname"]
@@ -294,13 +319,11 @@ def edit():
     )
     photo = cur.fetchall()
     # delete image in uploads folder and add new image
-    context = {
-        "filename": photo[0]["filename"],
-        "firstname": photo[0]["firstname"],
-        "lastname": photo[0]["lastname"],
-        "email": photo[0]["email"],
-        "logname": flask.session["user"]
-    }
+    context["filename"] = photo[0]["filename"]
+    context["firstname"] = photo[0]["firstname"]
+    context["lastname"] = photo[0]["lastname"]
+    context["email"] = photo[0]["email"]
+    context["logname"] = flask.session["user"]
 
     return flask.render_template("edit.html", **context)
 
@@ -321,7 +344,10 @@ def logged():
 
 @ICUDiary.app.route('/showcodes/', methods=['GET'])
 def showcodes():
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
     connect = ICUDiary.model.get_db()
+    context = common_context()
     patientcodeinfo = connect.execute(
         "SELECT patientcode "
         "FROM patient "
@@ -332,7 +358,7 @@ def showcodes():
     superusercodeinfo = connect.execute(
         "SELECT superusercode "
         "FROM superuser "
-        "WHERE superusername = ?",(flask.session['user'],)
+        "WHERE username = ?",(flask.session['user'],)
     )
     superusercode = superusercodeinfo.fetchall()[0]['superusercode']
 
@@ -343,13 +369,16 @@ def showcodes():
     )
     picture = pictureinfo.fetchall()[0]['filename']
     
-    context = {"patientcode": patientcode, "superusercode": superusercode, "filename": picture}
+    context["patientcode"] = patientcode 
+    context["superusercode"] = superusercode
+    context["filename"] = picture
 
     return flask.render_template("showcodes.html", **context)
 
 @ICUDiary.app.route('/accounts/superuser/', methods=['POST', 'GET'])
 def superuser():
     """Superuser authentication."""
+    context = {}
     if request.method == "POST":
         pcode = request.form["patientcode"]
         scode = request.form["superusercode"]
@@ -364,36 +393,35 @@ def superuser():
 
         matching_pcode = patientcode.fetchall()
         
+
+
         if len(matching_pcode) == 0:
             # no matching patient
             flask.session.clear()
             return flask.redirect("/accounts/login/")
 
-        superusercode = connect.execute(
-            "SELECT superusercode "
-            "FROM superuser "
-            "WHERE superusercode = ?",(scode,)
-        )
+        # superusercode = connect.execute(
+        #     "SELECT superusercode "
+        #     "FROM superuser "
+        #     "WHERE superusercode = ?",(scode,)
+        # )
         
-        matching_scode = superusercode.fetchall()
-        
-        if len(matching_scode) == 0:
-            # no matching superuser
-            flask.session.clear()
-            return flask.redirect("/accounts/login/")
+        # matching_scode = superusercode.fetchall()
 
-        insertion = connect.execute(
-            "INSERT INTO patient(username, patientcode) "
-            "VALUES (?, ?) ",
-            (flask.session["user"], pcode)
-        )
+        # if len(matching_scode) == 0:
+        #     # no matching superuser
+        #     flask.session.clear()
+        #     return flask.redirect("/accounts/login/")
+
+
         return flask.redirect("/")
     
-    return flask.render_template("superuser.html")
+    return flask.render_template("superuser.html", **context)
 
 @ICUDiary.app.route('/accounts/patientcode/', methods=['POST', 'GET'])
 def patientcode():
     """Patient account association."""
+    context = common_context()
     if request.method == "POST":
         pcode = request.form["patientcode"]
 
@@ -417,9 +445,20 @@ def patientcode():
             "VALUES (?, ?) ",
             (flask.session["user"], pcode)
         )
+
+        patientname = connect.execute(
+            "SELECT firstname, lastname from users "
+            "JOIN patient ON (patient.username = users.username) "
+            "WHERE patientcode = ? AND role = 'Patient'",
+            (pcode,)
+        ).fetchone()
+
+        patient = patientname['firstname'] + ' ' + patientname['lastname']
+        flask.session['patient'] = patient
+
         return flask.redirect("/")
 
-    return flask.render_template("patientcode.html")
+    return flask.render_template("patientcode.html", **context)
 
 
 def logged():
