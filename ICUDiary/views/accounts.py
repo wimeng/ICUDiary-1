@@ -171,18 +171,19 @@ def login():
         my_patientcode = connect.execute(
             "SELECT patientcode FROM patient "
             "WHERE username = ? ",
-            (flask.session['user'],)
+            (flask.session["user"],)
         ).fetchone()['patientcode']
 
-        patientname = connect.execute(
-            "SELECT firstname, lastname from users "
-            "JOIN patient ON (patient.username = users.username) "
-            "WHERE patientcode = ? AND role = 'Patient'",
-            (my_patientcode,)
-        ).fetchone()
+        if (my_patientcode):
+            patientname = connect.execute(
+                "SELECT firstname, lastname FROM users "
+                "JOIN patient ON (patient.username = users.username) "
+                "WHERE patientcode = ? AND role = 'Patient'",
+                (my_patientcode,)
+            ).fetchall()
 
-        patient = patientname['firstname'] + ' ' + patientname['lastname']
-        flask.session['patient'] = patient
+            patient = patientname[0]['firstname'] + ' ' + patientname[0]['lastname']
+            flask.session['patient'] = patient
 
         return flask.redirect("/")
         
