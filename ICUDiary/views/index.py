@@ -32,7 +32,7 @@ def static_func(file):
 @ICUDiary.app.route("/")
 def home():
     if logged() is False:
-        abort(403)
+        return flask.redirect("accounts/login/")
     context = common_context()
     connect = ICUDiary.model.get_db()
     role = connect.execute(

@@ -172,14 +172,14 @@ def login():
             "SELECT patientcode FROM patient "
             "WHERE username = ? ",
             (flask.session["user"],)
-        ).fetchone()['patientcode']
+        ).fetchone()
 
         if (my_patientcode):
             patientname = connect.execute(
                 "SELECT firstname, lastname FROM users "
                 "JOIN patient ON (patient.username = users.username) "
                 "WHERE patientcode = ? AND role = 'Patient'",
-                (my_patientcode,)
+                (my_patientcode['patientcode'],)
             ).fetchall()
 
             patient = patientname[0]['firstname'] + ' ' + patientname[0]['lastname']
