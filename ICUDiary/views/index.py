@@ -47,6 +47,7 @@ def home():
     context['user'] = flask.session['user']
     context['filename'] = photo[0]['filename']
     context['role'] = role
+    print(context['filename'])
 
     return flask.render_template("home.html", **context)
 
