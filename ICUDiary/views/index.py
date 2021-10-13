@@ -11,9 +11,18 @@ import ICUDiary
 from ICUDiary import config
 
 def common_context():
+    connect = ICUDiary.model.get_db()
     context = {'patient': ''}
     if 'patient' in flask.session:
         context['patient'] = flask.session['patient']
+    if 'user' in flask.session:
+        context['user'] = flask.session['user']
+        cur = connect.execute(
+            "SELECT filename FROM users "
+            "WHERE username = ? ", (flask.session["user"],)
+        )
+        photo = cur.fetchall()
+        context['filename'] = photo[0]['filename']
     return context
 
 @ICUDiary.app.route("/uploads/<file>")
@@ -38,16 +47,8 @@ def home():
     role = connect.execute(
         "SELECT role FROM users WHERE username = ?",(flask.session['user'],) 
     ).fetchone()['role']
-    cur = connect.execute(
-        "SELECT filename FROM users "
-        "WHERE username = ? ", (flask.session["user"],)
-    )
-    photo = cur.fetchall()
 
-    context['user'] = flask.session['user']
-    context['filename'] = photo[0]['filename']
     context['role'] = role
-    print(context['filename'])
 
     return flask.render_template("home.html", **context)
 

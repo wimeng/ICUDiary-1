@@ -9,7 +9,7 @@
         <h1 class="p-3 mb-2 bg-info text-white">
             <a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> | <span>ICYou |</span>
             <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" alt="Profile Picture"></a><span> Welcome, {{user}} |</span>
-            <span style="margin-left:20px; color:darkblue">{% if patient %}{{patient}}'s diary {% endif %}</span>
+            <span style="color:darkblue">{% if patient %}{{patient}}'s diary {% endif %}</span>
             <span style="float:right">
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
                     <input type="submit" name="logout" value="Logout"/>

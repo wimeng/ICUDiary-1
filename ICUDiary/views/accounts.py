@@ -18,9 +18,18 @@ from ICUDiary import config
 
 
 def common_context():
+    connect = ICUDiary.model.get_db()
     context = {'patient': ''}
     if 'patient' in flask.session:
         context['patient'] = flask.session['patient']
+    if 'user' in flask.session:
+        context['user'] = flask.session['user']
+        cur = connect.execute(
+            "SELECT filename FROM users "
+            "WHERE username = ? ", (flask.session["user"],)
+        )
+        photo = cur.fetchall()
+        context['filename'] = photo[0]['filename']
     return context
 
 @ICUDiary.app.route('/accounts/create/', methods=['POST', 'GET'])

@@ -14,9 +14,18 @@ from ICUDiary import config
 from ICUDiary.views.accounts import logged
 
 def common_context():
+    connect = ICUDiary.model.get_db()
     context = {'patient': ''}
     if 'patient' in flask.session:
         context['patient'] = flask.session['patient']
+    if 'user' in flask.session:
+        context['user'] = flask.session['user']
+        cur = connect.execute(
+            "SELECT filename FROM users "
+            "WHERE username = ? ", (flask.session["user"],)
+        )
+        photo = cur.fetchall()
+        context['filename'] = photo[0]['filename']
     return context
 
 @ICUDiary.app.route("/newentry/")
@@ -71,7 +80,6 @@ def archive1():
     )
     
     curr_role = role.fetchall()[0]['role']
-    print(curr_role)
 
     if curr_role == "User":
         abort(403)
