@@ -38,7 +38,16 @@ def home():
     role = connect.execute(
         "SELECT role FROM users WHERE username = ?",(flask.session['user'],) 
     ).fetchone()['role']
+    cur = connect.execute(
+        "SELECT filename FROM users "
+        "WHERE username = ? ", (flask.session["user"],)
+    )
+    photo = cur.fetchall()
+
+    context['user'] = flask.session['user']
+    context['filename'] = photo[0]['filename']
     context['role'] = role
+
     return flask.render_template("home.html", **context)
 
 
