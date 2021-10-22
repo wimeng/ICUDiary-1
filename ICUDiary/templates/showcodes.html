@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
-
 {% block body %}
 
-    <div class="text-center">
-        Here are your codes! Share them with people to let them make diary entries!
-    </div>
-    <br>
-    <span>Patient Code </span>
-    {{patientcode}}
-    <br>
-    <span>Superuser Code </span>
-    {{superusercode}}
+    <form action="/showcodes/" method="post" enctype="multipart/form-data">
+        <div class="d-flex justify-content-center">
+            <input class="btn btn-outline-info my-2 my-sm-0" type="submit" value="Show Codes"/>
+        </div>
+    </form>
+    {% if show %}
+        <br>
+        <div class="text-center">
+            Here are your codes! Share them with people to let them make diary entries!
+        </div>
+        <br>
+        <span>Patient Code: </span>
+        {{patientcode}}
+        <br>
+        <span>Superuser Code: </span>
+        {{superusercode}}
+    {% endif %}
 
 {% endblock %}

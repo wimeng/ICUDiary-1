@@ -6,9 +6,9 @@
 from setuptools import setup
 
 setup(
-    name='insta485',
+    name='ICUDiary',
     version='0.1.0',
-    packages=['insta485'],
+    packages=['ICUDiary'],
     include_package_data=True,
     install_requires=[
         'arrow',

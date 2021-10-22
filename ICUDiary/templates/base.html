@@ -6,17 +6,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     </head>
     <body>
-        <h1 class="p-3 mb-2 bg-info text-white">
-            <a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> | <span>ICYou |</span>
-            <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" alt="Profile Picture"></a><span> Welcome, {{user}} |</span>
-            <span style="color:darkblue">{% if patient %}{{patient}}'s diary {% endif %}</span>
-            <span style="float:right">
+        <h1 class="p-3 mb-2 text-white" style="width: 100%; display: flex; flex-flow: row wrap; background-color:lightskyblue;">
+            <span style="width: 33.33333%;"><a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> <span>ICYou</span></span>
+            <span style="color: darkblue; width: 33.33333%; text-align: center;">
+                {% if patient %}{{patient}}'s diary {% endif %}
+            </span>
+            <span style="width: 33.33333%; text-align: right;">
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
+                    <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a> {{user}}
                     <input type="submit" name="logout" value="Logout"/>
                 </form>
             </span>
         </h1>
-        <hr>
+        <a style="float: right;" href="/help/"><img width="75" height="75" src="{{url_for('static_func', file = 'help.png')}}"></a>
         <br>
         
         <div class = "container">

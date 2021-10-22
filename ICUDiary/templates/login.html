@@ -1,6 +1,8 @@
 {% extends 'unauth-base.html' %}
-
 {% block body %}
+        {% if incorrect %}
+        <span style="color: red" class="d-flex justify-content-center"> Username or Password Incorrect </span>
+        {% endif %}
         <form action="/accounts/login/" method="post" enctype="multipart/form-data">
             <div class="d-flex justify-content-center">
                 <input class="mr-sm-2" type="text" placeholder= "username" name="username"/>

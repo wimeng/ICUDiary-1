@@ -52,6 +52,10 @@ def home():
 
     return flask.render_template("home.html", **context)
 
+@ICUDiary.app.route("/help/")
+def help():
+    context = common_context()
+    return flask.render_template("info.html", **context)
 
 def logged():
     """User logged in check."""

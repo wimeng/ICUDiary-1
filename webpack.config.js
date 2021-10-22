@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './insta485/js/main.jsx',
+  entry: './ICUDiary/js/main.jsx',
   output: {
-    path: path.join(__dirname, '/insta485/static/js/'),
+    path: path.join(__dirname, '/ICUDiary/static/js/'),
     filename: 'bundle.js',
   },
   module: {
