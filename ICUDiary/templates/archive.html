@@ -2,19 +2,16 @@
 
 {% block body %}
     <!-- Page where you can create a recording for a diary entry -->
-    <h1>
-        <a href="/"><img src="{{url_for('file_func', file = 'DiaryLogo.png')}}"></a> | <span>ICYou</span>
-        <span style = float:right>
-            <b>Archive</b>
-        </span>
-    </h1>
-    <hr>
-
-    <br>
     <!-- link to record -->
     <p>
         <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/newentry/"><b>Make an entry</b></a>
     </p>
+    {% for entry in entries %}
+        {{entry.entryname}}
+        {{entry.entrytext}}
+        {{entry.writer}}
+        <hr/>
+    {% endfor %}
     <!-- Logout -->
     <p>
         <form action="/accounts/logout/" method="post" enctype="multipart/form-data">

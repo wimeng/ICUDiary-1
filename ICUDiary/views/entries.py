@@ -28,16 +28,27 @@ def common_context():
         context['filename'] = photo[0]['filename']
     return context
 
-@ICUDiary.app.route("/newentry/")
+@ICUDiary.app.route("/newentry/", methods=['POST', 'GET'])
 def newentry():
     """Send file."""
     if logged() is False:
         return flask.redirect("/accounts/login/")
     context = common_context()
+    
+    if request.method == "POST":
+        entry_title = request.form['entrytitle']
+        entry_text = request.form['entry']
+        connect = ICUDiary.model.get_db()
+        insert = connect.execute(
+            "INSERT INTO text_entries(entryname, entrytext, writer) "
+            "VALUES (?, ?, ?) ", (entry_title, entry_text, flask.session['user'])
+        )
+        return flask.redirect("/archive/")
+
     return flask.render_template("recording.html", **context)
 
 # THE REAL ENDPOINT FOR THIS IS /archive/, THIS IS TEMPORARILY SET FOR THE DEMO
-@ICUDiary.app.route("/archive/1/")
+@ICUDiary.app.route("/archive/")
 def archive():
     """Send file."""
 
@@ -58,11 +69,48 @@ def archive():
     print(curr_role)
 
     if curr_role == "User":
-        abort(403)
+        message = connect.execute(
+            "SELECT * "
+            "FROM text_entries "
+            "WHERE writer = ?", (flask.session["user"],)
+        ).fetchall()
+        context["entries"] = message
+
+    if curr_role == "Patient":
+        pcode = connect.execute(
+            "SELECT patientcode "
+            "FROM patient "
+            "WHERE username = ?",(flask.session['user'],)
+        ).fetchone()['patientcode']
+        
+        """ messages = []
+
+        users = connect.excecute(
+            "SELECT username "
+            "FROM patient "
+            "WHERE patientcode = ? ", (pcode,)
+        ).fetchall()
+
+        for user in users:
+            message = connect.execute(
+                "SELECT * "
+                "FROM text_entries "
+                "WHERE writer = ? ", (user,)
+            ).fetchall()
+            messages.append(message)
+         """
+        message = connect.execute(
+            "SELECT * "
+            "FROM text_entries JOIN patient ON (text_entries.writer = patient.username) "
+            "WHERE patientcode = ? ",
+            (pcode,)
+        ).fetchall()
+        context["entries"] = message
+    
 
     return flask.render_template("archive.html", **context)
 
-@ICUDiary.app.route("/archive/")
+@ICUDiary.app.route("/archive/1/")
 def archive1():
     """Send file."""
 

@@ -17,17 +17,28 @@ CREATE TABLE superuser(
 );
 
 CREATE table patient(
-  username VARCHAR(20) PRIMARY KEY,
+  username VARCHAR(20),
   patientcode VARCHAR(20) NOT NULL,
   FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
+CREATE TABLE text_entries(
+  entryid INTEGER PRIMARY KEY,
+  entryname VARCHAR(100) NOT NULL,
+  entrytext VARCHAR(250) NOT NULL,
+  writer VARCHAR(20) NOT NULL,
+  patient VARCHAR(20) NOT NULL,
+  created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
+);
+
 CREATE TABLE entries(
-  entryid INTEGER NOT NULL,
+  entryid INTEGER PRIMARY KEY,
+  entryname VARCHAR(100) NOT NULL,
   filename VARCHAR(64) NOT NULL,
   writer VARCHAR(20) NOT NULL,
+  patient VARCHAR(20) NOT NULL,
   created DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY(entryid),
   FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
 );
 
