@@ -14,16 +14,29 @@ class Text extends React.Component {
         maxChars: 0,
         textInput: "",
         entryTitle: "",
+        patientDropdown: []
     };
   }
 
-  componentDidMount() {
+componentDidMount() {
     // set state of character count to begin with
-    this.setState({ 
-        maxChars: 250,
-        textInput: "",
-        entryTitle: "",
-    });
+    const url = "/api/patientdropdown/";
+
+    // Call REST API to get post info
+    fetch(url, { credentials: 'same-origin', method: 'GET'})
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+          return response.json();
+      })
+      .then((data) => {
+        this.setState({
+          maxChars: 250,
+          textInput: "",
+          entryTitle: "",
+          patientDropdown : data.patients,
+        });
+      })
+      .catch((error) => console.log(error));
   }
 
 handleChange(event) {
@@ -45,10 +58,15 @@ handleTitleChange(event) {
 }
 
   render() {
-    let {  } = this.state;
+    let { patientDropdown } = this.state;
+    const options = patientDropdown.map((patient) => <option key={patient.username} value={patient.username}>{patient.firstname} {patient.lastname}</option>)
     return (
       <div>
         <form action="/newentry/" method="post" enctype="multipart/form-data">
+            <label for="patient"> Select a patient:</label>
+            <select name="patient" id="patient" required>
+                {options}
+            </select>
             <div class="d-flex justify-content-center">
                 <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" value={this.state.entryTitle} onChange={(e) => {this.handleTitleChange(e)}}/>
             </div>

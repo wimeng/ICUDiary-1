@@ -17,7 +17,13 @@
             </span>
             <span style="width: 33.33333%; text-align: right;">
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
-                    <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a> {{user}}
+                    {% if filename %}
+                        <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                    {% else %}
+                        <a href="/"><img src="{{url_for('file_func', file = Default.png)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                    {% endif %}
+                    {{user}}
+                    
                     <input type="submit" name="logout" value="Logout"/>
                 </form>
             </span>

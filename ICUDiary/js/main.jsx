@@ -21,3 +21,5 @@ ReactDOM.render(
   <Form/>,
   document.getElementById('reactEntry'),
 );
+
+ReactDOM.render(<Test/>,document.getElementById('test'));

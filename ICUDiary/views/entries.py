@@ -36,13 +36,15 @@ def newentry():
         return flask.redirect("/accounts/login/")
     context = common_context()
     
+    connect = ICUDiary.model.get_db()
+    
     if request.method == "POST":
         entry_title = request.form['entrytitle']
         entry_text = request.form['entry']
-        connect = ICUDiary.model.get_db()
-        insert = connect.execute(
-            "INSERT INTO text_entries(entryname, entrytext, writer) "
-            "VALUES (?, ?, ?) ", (entry_title, entry_text, flask.session['user'])
+        selected_patient = request.form['patient']
+        connect.execute(
+            "INSERT INTO text_entries(entryname, entrytext, writer, patient) "
+            "VALUES (?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, )
         )
         return flask.redirect("/archive/")
 
@@ -84,25 +86,9 @@ def archive():
             "WHERE username = ?",(flask.session['user'],)
         ).fetchone()['patientcode']
         
-        """ messages = []
-
-        users = connect.excecute(
-            "SELECT username "
-            "FROM patient "
-            "WHERE patientcode = ? ", (pcode,)
-        ).fetchall()
-
-        for user in users:
-            message = connect.execute(
-                "SELECT * "
-                "FROM text_entries "
-                "WHERE writer = ? ", (user,)
-            ).fetchall()
-            messages.append(message)
-         """
         message = connect.execute(
             "SELECT * "
-            "FROM text_entries JOIN patient ON (text_entries.writer = patient.username) "
+            "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
             "WHERE patientcode = ? ",
             (pcode,)
         ).fetchall()

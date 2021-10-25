@@ -7,4 +7,12 @@
         <input type="submit" name="signup" value="submit"/>
         <br>
     </form>
+    {% if existing %}
+        <span>This patient already exists in your records.</span>
+        <br>
+    {% endif %}
+    {% for patient in patients %}
+        <span>{{patient}}</span>
+        <br>
+    {% endfor %}
 {% endblock %}}
