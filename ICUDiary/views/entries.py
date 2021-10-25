@@ -21,11 +21,12 @@ def common_context():
     if 'user' in flask.session:
         context['user'] = flask.session['user']
         cur = connect.execute(
-            "SELECT filename FROM users "
+            "SELECT filename, role FROM users "
             "WHERE username = ? ", (flask.session["user"],)
         )
         photo = cur.fetchall()
         context['filename'] = photo[0]['filename']
+        context['role'] = photo[0]['role']
     return context
 
 @ICUDiary.app.route("/newentry/", methods=['POST', 'GET'])
