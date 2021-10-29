@@ -10,17 +10,17 @@
             <span style="width: 33.33333%;"><a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> <span>ICYou</span></span>
             <span style="color: darkblue; width: 33.33333%; text-align: center;">
                 {% if patient %}
-                    {% if role == 'Patient' %}
+                    {% if role != 'User' %}
                         {{patient}}'s diary 
                     {% endif %}
                 {% endif %}
             </span>
             <span style="width: 33.33333%; text-align: right;">
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
-                    {% if filename %}
+                    {% if filename == "" %}
                         <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
                     {% else %}
-                        <a href="/"><img src="{{url_for('file_func', file = Default.png)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                        <a href="/"><img src="{{url_for('static_func', file = 'Default.png')}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
                     {% endif %}
                     {{user}}
                     

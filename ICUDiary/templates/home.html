@@ -6,6 +6,9 @@
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/archive/"><b class = "h1">View archive</b></a>
             {% if role == 'User' %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/accounts/patientcode/"><b class = "h1">Enter patient codes</b></a>
+            {% elif role == 'Superuser' and not usesPatient %}
+            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/accounts/superuser/"><b class = "h1">Enter codes</b></a>
+            {% elif role == 'Superuser' and usesPatient %}
             {% else %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/showcodes/"><b class = "h1">Access codes</b></a>
             {% endif %}

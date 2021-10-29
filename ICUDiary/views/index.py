@@ -13,8 +13,6 @@ from ICUDiary import config
 def common_context():
     connect = ICUDiary.model.get_db()
     context = {'patient': ''}
-    if 'patient' in flask.session:
-        context['patient'] = flask.session['patient']
     if 'user' in flask.session:
         context['user'] = flask.session['user']
         cur = connect.execute(
@@ -24,6 +22,27 @@ def common_context():
         photo = cur.fetchall()
         context['filename'] = photo[0]['filename']
         context['role'] = photo[0]['role']
+
+        patientname = ''
+        if context['role'] == 'Patient':
+            cur = connect.execute(
+                "SELECT * FROM users "
+                "WHERE username = ? ", (flask.session["user"],)
+            ).fetchone()
+            patientname = cur['firstname'] + " " + cur['lastname'] 
+        elif context['role'] == 'Superuser':
+            scode = connect.execute(
+                "SELECT superusercode FROM superuser "
+                "WHERE username = ? ", (flask.session["user"],)
+            ).fetchone()['superusercode']
+            cur = connect.execute(
+                "SELECT firstname, lastname FROM users JOIN superuser ON (users.username = superuser.username) "
+                "WHERE superusercode = ? AND role = 'Patient'", (scode,)
+            ).fetchone()
+            patientname = cur['firstname'] + " " + cur['lastname']
+            
+        context['patient'] = patientname
+        
     return context
 
 @ICUDiary.app.route("/uploads/<file>")
@@ -50,6 +69,14 @@ def home():
     ).fetchone()['role']
 
     context['role'] = role
+
+    context['usesPatient'] = False
+    if role == 'Superuser':
+        superuser = connect.execute(
+            "SELECT * FROM superuser WHERE username = ?",(flask.session['user'],) 
+        ).fetchone()
+        if superuser:
+            context['usesPatient'] = True
 
     return flask.render_template("home.html", **context)
 

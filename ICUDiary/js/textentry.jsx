@@ -62,19 +62,25 @@ handleTitleChange(event) {
     const options = patientDropdown.map((patient) => <option key={patient.username} value={patient.username}>{patient.firstname} {patient.lastname}</option>)
     return (
       <div>
+      <br/>
+      <br/>
         <form action="/newentry/" method="post" enctype="multipart/form-data">
-            <label for="patient"> Select a patient:</label>
-            <select name="patient" id="patient" required>
-                {options}
-            </select>
+            <div class="d-flex justify-content-center">
+              <label for="patient"> Select a patient:</label>
+              <select name="patient" id="patient" required>
+                  {options}
+              </select>
+            </div>
             <div class="d-flex justify-content-center">
                 <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" value={this.state.entryTitle} onChange={(e) => {this.handleTitleChange(e)}}/>
             </div>
             <div class="d-flex justify-content-center">
                 <textarea style={{resize: 'both'}} type="text" placeholder="Type Your Entry Here" name="entry" value={this.state.textInput} onChange={(e) => {this.handleChange(e)}}/>              
             </div>
-            <p class="d-flex justify-content-center">Characters Remaining: {this.state.maxChars}</p>  
-            <input type="submit" name="createEntry" value="Create Entry"/>
+            <p class="d-flex justify-content-center">Characters Remaining: {this.state.maxChars}</p> 
+            <div class="d-flex justify-content-center">
+              <input type="submit" name="createEntry" value="Create Entry"/>
+            </div>
         </form>
       </div>
     );
