@@ -32,6 +32,16 @@ CREATE TABLE text_entries(
   FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
 );
 
+CREATE TABLE audio_entries(
+  entryid INTEGER PRIMARY KEY,
+  entryname VARCHAR(100) NOT NULL,
+  entryaudio VARCHAR(250) NOT NULL,
+  writer VARCHAR(20) NOT NULL,
+  patient VARCHAR(20) NOT NULL,
+  created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
+);
+
 CREATE TABLE entries(
   entryid INTEGER PRIMARY KEY,
   entryname VARCHAR(100) NOT NULL,

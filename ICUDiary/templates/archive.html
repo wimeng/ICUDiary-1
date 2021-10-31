@@ -8,10 +8,24 @@
     </p>
     {% for entry in entries %}
         {{entry.entryname}}
+        {% if entry.entryaudio %}
+        <audio src='{{entry.entryaudio}}' controls='controls'></audio>
+        {% else %}
         {{entry.entrytext}}
+        {% endif %}
         {{entry.writer}}
+        {{entry.created}}
         <hr/>
     {% endfor %}
+
+    <!-- {% for entry in audio_entries %}
+        {{entry.entryname}}
+        <audio src='{{entry.entryaudio}}' controls='controls'></audio>
+        {{entry.writer}}
+        {{entry.created}}
+        <hr/>
+    {% endfor %} -->
+
     <!-- Logout -->
     <p>
         <form action="/accounts/logout/" method="post" enctype="multipart/form-data">

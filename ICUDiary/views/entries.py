@@ -58,14 +58,25 @@ def newentry():
     connect = ICUDiary.model.get_db()
     
     if request.method == "POST":
-        entry_title = request.form['entrytitle']
-        entry_text = request.form['entry']
-        selected_patient = request.form['patient']
-        connect.execute(
-            "INSERT INTO text_entries(entryname, entrytext, writer, patient) "
-            "VALUES (?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, )
-        )
-        return flask.redirect("/archive/")
+        if request.form['type'] == 'text':
+            entry_title = request.form['entrytitle']
+            entry_text = request.form['entry']
+            selected_patient = request.form['patient']
+            connect.execute(
+                "INSERT INTO text_entries(entryname, entrytext, writer, patient) "
+                "VALUES (?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, )
+            )
+            return flask.redirect("/archive/")
+        
+        if request.form['type'] == 'audio':
+            entry_title = request.form['entrytitle']
+            entry_audio = request.form['entry']
+            selected_patient = request.form['patient']
+            connect.execute(
+                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient) "
+                "VALUES (?, ?, ?, ?) ", (entry_title, entry_audio, flask.session['user'], selected_patient, )
+            )
+            return flask.redirect("/archive/")
 
     return flask.render_template("recording.html", **context)
 
@@ -108,10 +119,20 @@ def archive():
         message = connect.execute(
             "SELECT * "
             "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
-            "WHERE patientcode = ? ",
+            "JOIN audio_entries ON (audio_entries.patient = patient.username)"
+            "WHERE patientcode = ? "
+            "ORDER BY text_entries.created DESC, audio_entries.created DESC",
             (pcode,)
         ).fetchall()
+
+        # example test code delete later
+        # audio_message = connect.execute(
+        #     "SELECT * "
+        #     "FROM audio_entries "
+        # ).fetchall()
+
         context["entries"] = message
+        # context["audio_entries"] = audio_message
 
     if curr_role == "Superuser":
         scode = connect.execute(

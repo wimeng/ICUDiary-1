@@ -16,7 +16,6 @@ from flask import abort
 import ICUDiary
 from ICUDiary import config
 
-
 def common_context():
     connect = ICUDiary.model.get_db()
     context = {'patient': ''}
