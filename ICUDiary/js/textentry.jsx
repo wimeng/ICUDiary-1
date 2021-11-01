@@ -65,6 +65,7 @@ handleTitleChange(event) {
       <br/>
       <br/>
         <form action="/newentry/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="type" value="text"/>
             <div class="d-flex justify-content-center">
               <label for="patient"> Select a patient:</label>
               <select name="patient" id="patient" required>

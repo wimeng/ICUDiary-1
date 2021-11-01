@@ -8,7 +8,7 @@
     </p>
     {% for entry in entries %}
         {{entry.entryname}}
-        {% if entry.entryaudio %}
+        {% if entry.entrytext[0:5] == 'blob:' %}
         <audio src='{{entry.entryaudio}}' controls='controls'></audio>
         {% else %}
         {{entry.entrytext}}

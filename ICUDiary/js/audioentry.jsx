@@ -6,6 +6,29 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
+const Dictaphone = () => {
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  }
+
+  return (
+    <div>
+      <p>Microphone: {listening ? 'on' : 'off'}</p>
+      <button onClick={SpeechRecognition.startListening}>Start</button>
+      <button onClick={SpeechRecognition.stopListening}>Stop</button>
+      <button onClick={resetTranscript}>Reset</button>
+      <p>{transcript}</p>
+    </div>
+  );
+};
+
 class Audio extends React.Component {
   /* Display buttons to choose from
    * Reference on audio player https://github.com/Matheswaaran/react-mp3-audio-recording
@@ -81,10 +104,11 @@ class Audio extends React.Component {
   };
 
   render() {
-    let { blobURL, patientDropdown} = this.state;
+    let { patientDropdown } = this.state;
     const options = patientDropdown.map((patient) => <option key={patient.username} value={patient.username}>{patient.firstname} {patient.lastname}</option>)
     return (
       <div>
+        <Dictaphone></Dictaphone>
         <button onClick={this.start} disabled={this.state.isRecording}>
           Record
         </button><button onClick={this.stop} disabled={!this.state.isRecording}>
@@ -92,7 +116,7 @@ class Audio extends React.Component {
         </button><audio src={this.state.blobURL} controls="controls" />
         <form action="/newentry/" method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
-          <input type="hidden" name="entry" value={blobURL}/>
+          <input type="hidden" name="entry" value={this.state.blobURL}/>
           <div class="d-flex justify-content-center">
             <label for="patient"> Select a patient:</label>
             <select name="patient" id="patient" required>

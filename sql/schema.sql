@@ -13,6 +13,7 @@ CREATE TABLE users(
 CREATE TABLE superuser(
   username VARCHAR(20) PRIMARY KEY,
   superusercode VARCHAR(20) NOT NULL,
+  has_perms BOOLEAN NOT NULL CHECK (has_perms IN (0, 1)) DEFAULT 1,
   FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 

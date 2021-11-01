@@ -119,20 +119,27 @@ def archive():
         message = connect.execute(
             "SELECT * "
             "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
-            "JOIN audio_entries ON (audio_entries.patient = patient.username)"
             "WHERE patientcode = ? "
-            "ORDER BY text_entries.created DESC, audio_entries.created DESC",
-            (pcode,)
+            "UNION "
+            "SELECT * "
+            "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+            "WHERE patientcode = ? "
+            "ORDER BY created DESC ",
+            (pcode, pcode)
         ).fetchall()
 
         # example test code delete later
-        # audio_message = connect.execute(
-        #     "SELECT * "
-        #     "FROM audio_entries "
-        # ).fetchall()
+        audio_message = connect.execute(
+            "SELECT * "
+            "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+            "WHERE patientcode = ? "
+            "ORDER BY audio_entries.created DESC",
+            (pcode,)
+        ).fetchall()
+
 
         context["entries"] = message
-        # context["audio_entries"] = audio_message
+        context["audio_entries"] = audio_message
 
     if curr_role == "Superuser":
         scode = connect.execute(

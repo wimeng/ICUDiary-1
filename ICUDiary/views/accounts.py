@@ -273,6 +273,7 @@ def edit():
     # Connect to database
     connect = ICUDiary.model.get_db()
     context = common_context()
+    context['perms'] = False
     if request.method == "POST":
         photoicon = request.files["file"]
         first_name = request.form["firstname"]
@@ -327,7 +328,8 @@ def edit():
                 "SET email = ? "
                 "WHERE username = ? ", (email, flask.session["user"],)
             )
-
+    if context['role'] == 'Patient':
+        context['perms'] = True
     cur = connect.execute(
         "SELECT firstname, lastname, email, filename FROM users "
         "WHERE username = ? ", (flask.session["user"],)
