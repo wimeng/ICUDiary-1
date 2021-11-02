@@ -38,12 +38,15 @@ class Audio extends React.Component {
     // Initialize mutable state
     super(props);
     this.state = { 
+       recordedFile: null,
+       audioFileURL: null,
        isRecording: false,
-       blobURL: '',
        isBlocked: false,
        entryTitle: '',
        patientDropdown: [],
     };
+
+    this.submitEntry = this.submitEntry.bind(this);
   }
 
   componentDidMount() {
@@ -93,15 +96,36 @@ class Audio extends React.Component {
       .stop()
       .getMp3()
       .then(([buffer, blob]) => {
-        const blobURL = URL.createObjectURL(blob)
-        this.setState({ blobURL, isRecording: false });
+
+        let file = new File(buffer, 'music.mp3', {
+          type: blob.type,
+          lastModified: Date.now()
+        });
+
+        let audioURL = URL.createObjectURL(file);
+
+        this.setState({
+          recordedFile: file,
+          audioFileURL: audioURL,
+          isRecording: false
+        });
+
+        // const blobURL = URL.createObjectURL(blob);
+        // this.setState({ blobURL, isRecording: false });
       }).catch((e) => console.log(e));
   };
 
   reset = () => {
     this.state.resetTranscript();
-    
   };
+
+  submitEntry(event){
+    event.preventDefault();
+    debugger;
+    event.target.files[0] = this.state.recordedFile;
+    // action: /newentry/
+  }
+
 
   render() {
     let { patientDropdown } = this.state;
@@ -113,10 +137,10 @@ class Audio extends React.Component {
           Record
         </button><button onClick={this.stop} disabled={!this.state.isRecording}>
           Stop
-        </button><audio src={this.state.blobURL} controls="controls" />
-        <form action="/newentry/" method="post" enctype="multipart/form-data">
+        </button><audio src={this.state.audioFileURL} controls="controls" />
+        <form method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
-          <input type="hidden" name="entry" value={this.state.blobURL}/>
+          <input type="hidden" name="entry" value={this.state.recordedFile}/>
           <div class="d-flex justify-content-center">
             <label for="patient"> Select a patient:</label>
             <select name="patient" id="patient" required>
@@ -128,7 +152,7 @@ class Audio extends React.Component {
           </div>
           
           <div class="d-flex justify-content-center">
-            <input type="submit" name="createEntry" value="Create Entry"/>
+            <input type="submit" name="createEntry" value="Create Entry" onClick={this.submitEntry}/>
           </div>
         </form>
       </div>
