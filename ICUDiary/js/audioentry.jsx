@@ -38,12 +38,16 @@ class Audio extends React.Component {
     // Initialize mutable state
     super(props);
     this.state = { 
+       recordedFile: null,
+       audioFileURL: null,
        isRecording: false,
        file: null,
        isBlocked: false,
        entryTitle: '',
        patientDropdown: [],
     };
+
+    this.submitEntry = this.submitEntry.bind(this);
   }
 
   componentDidMount() {
@@ -105,8 +109,15 @@ class Audio extends React.Component {
 
   reset = () => {
     this.state.resetTranscript();
-    
   };
+
+  submitEntry(event){
+    event.preventDefault();
+    debugger;
+    event.target.files[0] = this.state.recordedFile;
+    // action: /newentry/
+  }
+
 
   render() {
     let { patientDropdown } = this.state;
@@ -121,7 +132,7 @@ class Audio extends React.Component {
         </button><audio src={URL.createObjectURL(this.state.file)} controls="controls" />
         <form action="/newentry/" method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
-          <input type="hidden" name="entry" value={this.state.blobURL}/>
+          <input type="hidden" name="entry" value={this.state.recordedFile}/>
           <div class="d-flex justify-content-center">
             <label for="patient"> Select a patient:</label>
             <select name="patient" id="patient" required>
@@ -133,7 +144,7 @@ class Audio extends React.Component {
           </div>
           
           <div class="d-flex justify-content-center">
-            <input type="submit" name="createEntry" value="Create Entry"/>
+            <input type="submit" name="createEntry" value="Create Entry" onClick={this.submitEntry}/>
           </div>
         </form>
       </div>
