@@ -39,7 +39,7 @@ class Audio extends React.Component {
     super(props);
     this.state = { 
        isRecording: false,
-       blobURL: '',
+       file: null,
        isBlocked: false,
        entryTitle: '',
        patientDropdown: [],
@@ -93,8 +93,13 @@ class Audio extends React.Component {
       .stop()
       .getMp3()
       .then(([buffer, blob]) => {
-        const blobURL = URL.createObjectURL(blob)
-        this.setState({ blobURL, isRecording: false });
+        console.log(buffer, blob);
+        const file = new File(buffer, 'music.mp3', {
+          type: blob.type,
+          lastModified: Date.now()
+        });
+
+        this.setState({ file: file, isRecording: false });
       }).catch((e) => console.log(e));
   };
 
@@ -113,7 +118,7 @@ class Audio extends React.Component {
           Record
         </button><button onClick={this.stop} disabled={!this.state.isRecording}>
           Stop
-        </button><audio src={this.state.blobURL} controls="controls" />
+        </button><audio src={URL.createObjectURL(this.state.file)} controls="controls" />
         <form action="/newentry/" method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
           <input type="hidden" name="entry" value={this.state.blobURL}/>
