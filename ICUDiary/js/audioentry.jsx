@@ -41,7 +41,7 @@ class Audio extends React.Component {
        recordedFile: null,
        audioFileURL: null,
        isRecording: false,
-       file: null,
+       file: new File([], ""),
        isBlocked: false,
        entryTitle: '',
        patientDropdown: [],
@@ -111,7 +111,7 @@ class Audio extends React.Component {
     this.state.resetTranscript();
   };
 
-  submitEntry(event){
+  submitEntry = (event) => {
     event.preventDefault();
     debugger;
     event.target.files[0] = this.state.recordedFile;

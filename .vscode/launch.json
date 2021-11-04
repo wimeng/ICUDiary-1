@@ -9,7 +9,9 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:8000",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "disableNetworkCache": true,
         }
     ]
 }
