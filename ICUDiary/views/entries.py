@@ -12,6 +12,8 @@ from flask import abort
 import ICUDiary
 from ICUDiary import config
 from ICUDiary.views.accounts import logged
+import uuid
+import pathlib
 
 def common_context():
     connect = ICUDiary.model.get_db()
@@ -69,13 +71,34 @@ def newentry():
             return flask.redirect("/archive/")
         
         if request.form['type'] == 'audio':
-            entry_title = request.form['entrytitle']
-            entry_audio = request.form['entry']
+            print(request.files)
+            print(request.form)
+
+            fileobj = request.files["file"]
+            filename = fileobj.filename
+            # Compute base name (filename without directory).
+            # We use a UUID to avoid
+            # clashes with existing files, and ensure
+            # that the name is compatible with the
+            # filesystem.
+            uuid_basename = "{stem}{suffix}".format(
+                stem=uuid.uuid4().hex,
+                suffix=pathlib.Path(filename).suffix
+            )
+            # Save to disk
+            path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobj.save(path)
+
+            entry_title = request.form['title']
+            entry_audio = path
             selected_patient = request.form['patient']
             connect.execute(
                 "INSERT INTO audio_entries(entryname, entryaudio, writer, patient) "
-                "VALUES (?, ?, ?, ?) ", (entry_title, entry_audio, flask.session['user'], selected_patient, )
+                "VALUES (?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, )
             )
+            print(selected_patient)
+            print(uuid_basename)
+            print('hello')
             return flask.redirect("/archive/")
 
     return flask.render_template("recording.html", **context)
@@ -105,7 +128,12 @@ def archive():
         message = connect.execute(
             "SELECT * "
             "FROM text_entries "
-            "WHERE writer = ?", (flask.session["user"],)
+            "WHERE writer = ?"
+            "UNION "
+            "SELECT * "
+            "FROM audio_entries "
+            "WHERE writer = ? "
+            "ORDER BY created DESC ", (flask.session["user"],flask.session["user"])
         ).fetchall()
         context["entries"] = message
 
@@ -128,18 +156,18 @@ def archive():
             (pcode, pcode)
         ).fetchall()
 
-        # example test code delete later
-        audio_message = connect.execute(
-            "SELECT * "
-            "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
-            "WHERE patientcode = ? "
-            "ORDER BY audio_entries.created DESC",
-            (pcode,)
-        ).fetchall()
+        # # example test code delete later
+        # audio_message = connect.execute(
+        #     "SELECT * "
+        #     "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+        #     "WHERE patientcode = ? "
+        #     "ORDER BY audio_entries.created DESC",
+        #     (pcode,)
+        # ).fetchall()
 
 
         context["entries"] = message
-        context["audio_entries"] = audio_message
+        # context["audio_entries"] = audio_message
 
     if curr_role == "Superuser":
         scode = connect.execute(
@@ -152,9 +180,16 @@ def archive():
         message = connect.execute(
             "SELECT * "
             "FROM text_entries JOIN superuser ON (text_entries.patient = superuser.username) "
-            "WHERE superusercode = ? ",
-            (scode,)
+            "WHERE superusercode = ? "
+            "UNION "
+            "SELECT * "
+            "FROM audio_entries JOIN superuser ON (audio_entries.patient = superuser.username) "
+            "WHERE superusercode = ? "
+            "ORDER BY created DESC ",
+            (scode,scode)
         ).fetchall()
+
+
         context["entries"] = message
     
 

@@ -90,22 +90,24 @@ def create_user():
         password_db_string = "$".join([algorithm, salt, password_hash])
 
         # Unpack flask object
-        fileobject = request.files["file"]
-        filename = fileobject.filename
+        uuid_basename = ''
+        if request.files["file"]:
+            fileobject = request.files["file"]
+            filename = fileobject.filename
 
-        # Compute base name (filename without directory).
-        # We use a UUID to avoid
-        # clashes with existing files,
-        # and ensure that the name is compatible with the
-        # filesystem.
-        uuid_basename = "{stem}{suffix}".format(
-            stem=uuid.uuid4().hex,
-            suffix=pathlib.Path(filename).suffix
-        )
+            # Compute base name (filename without directory).
+            # We use a UUID to avoid
+            # clashes with existing files,
+            # and ensure that the name is compatible with the
+            # filesystem.
+            uuid_basename = "{stem}{suffix}".format(
+                stem=uuid.uuid4().hex,
+                suffix=pathlib.Path(filename).suffix
+            )
 
-        # Save to disk
-        path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
-        fileobject.save(path)
+            # Save to disk
+            path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobject.save(path)
 
         # Query database
         insertion = connect.execute(

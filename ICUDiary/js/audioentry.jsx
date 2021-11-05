@@ -38,16 +38,19 @@ class Audio extends React.Component {
     // Initialize mutable state
     super(props);
     this.state = { 
-       recordedFile: null,
        audioFileURL: null,
        isRecording: false,
        file: new File([], ""),
        isBlocked: false,
        entryTitle: '',
        patientDropdown: [],
+       patient: '',
+       title: ''
     };
 
     this.submitEntry = this.submitEntry.bind(this);
+    this.handlePatientChange = this.handlePatientChange.bind(this);
+    this.handleTitleChange = this.handleTitleChange.bind(this);
   }
 
   componentDidMount() {
@@ -75,6 +78,7 @@ class Audio extends React.Component {
       .then((data) => {
         this.setState({
           patientDropdown : data.patients,
+          patient: (data.patients ? data.patients[0].username : '')
         });
       })
       .catch((error) => console.log(error));
@@ -112,16 +116,42 @@ class Audio extends React.Component {
   };
 
   submitEntry = (event) => {
+    const { title, patient, file } = this.state;
     event.preventDefault();
-    debugger;
-    event.target.files[0] = this.state.recordedFile;
+    var formData = new FormData();
+
+    formData.append("type", "audio");
+    formData.append("title", title);
+    formData.append("patient", patient);
+    formData.append("file", file);
+
+    var request = new XMLHttpRequest();
+    request.open("POST", "/newentry/");
+    request.send(formData);
+
+    // event.target.files = [];
+    // event.target.files[0] = file;
+    // event.target.href = "/newentry/";
+    // document.dispatchEvent(event);
     // action: /newentry/
   }
 
+  handlePatientChange(value) {
+    debugger;
+    this.setState(() => ({
+        patient: value,
+    }));
+  }
+
+  handleTitleChange(event) {
+    event.preventDefault();
+    this.setState(() => ({
+        title: event.target.value,
+    }));
+  }
 
   render() {
     let { patientDropdown } = this.state;
-    const options = patientDropdown.map((patient) => <option key={patient.username} value={patient.username}>{patient.firstname} {patient.lastname}</option>)
     return (
       <div>
         <Dictaphone></Dictaphone>
@@ -130,21 +160,20 @@ class Audio extends React.Component {
         </button><button onClick={this.stop} disabled={!this.state.isRecording}>
           Stop
         </button><audio src={URL.createObjectURL(this.state.file)} controls="controls" />
-        <form action="/newentry/" method="post" enctype="multipart/form-data">
+        <form onSubmit={(e) => this.submitEntry(e)} method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
-          <input type="hidden" name="entry" value={this.state.recordedFile}/>
           <div class="d-flex justify-content-center">
             <label for="patient"> Select a patient:</label>
-            <select name="patient" id="patient" required>
-                {options}
+            <select name="patient" id="patient" onChange={(e) => this.handlePatientChange(e.target.value)} required>
+                {patientDropdown.map((patient) => <option key={patient.username} value={patient.username}>{patient.firstname} {patient.lastname}</option>)}
             </select>
           </div>
           <div class="d-flex justify-content-center">
-            <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle"/>
+            <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" onChange={(e) => this.handleTitleChange(e)}/>
           </div>
           
           <div class="d-flex justify-content-center">
-            <input type="submit" name="createEntry" value="Create Entry" onClick={this.submitEntry}/>
+            <input type="submit" name="createEntry" value="Create Entry"/>
           </div>
         </form>
       </div>

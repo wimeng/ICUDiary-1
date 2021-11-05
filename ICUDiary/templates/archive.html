@@ -8,8 +8,8 @@
     </p>
     {% for entry in entries %}
         {{entry.entryname}}
-        {% if entry.entrytext[0:5] == 'blob:' %}
-        <audio src='{{entry.entryaudio}}' controls='controls'></audio>
+        {% if entry.entrytext[-4:] == '.mp3' %}
+        <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls'></audio>
         {% else %}
         {{entry.entrytext}}
         {% endif %}
