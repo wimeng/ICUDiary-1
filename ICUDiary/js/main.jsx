@@ -17,10 +17,7 @@ class Test extends React.Component {
   }
 }
 
-if (document.getElementById('test')) {
-  ReactDOM.render(<Test/>,document.getElementById('test'));
-}
-else if (document.getElementById('strengthCheckedPassword')) {
+if (document.getElementById('strengthCheckedPassword')) {
   ReactDOM.render(<StrengthChecker/>,document.getElementById('strengthCheckedPassword'));
 }
 

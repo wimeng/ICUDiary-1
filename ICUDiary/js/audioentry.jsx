@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MicRecorder from 'mic-recorder-to-mp3';
-import 'regenerator-runtime/runtime'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import 'regenerator-runtime/runtime';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { Navigate } from 'react-router-dom';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
@@ -128,6 +129,10 @@ class Audio extends React.Component {
     var request = new XMLHttpRequest();
     request.open("POST", "/newentry/");
     request.send(formData);
+    window.location.replace("/archive/");
+    <Navigate to="/archive/"/>
+
+
 
     // event.target.files = [];
     // event.target.files[0] = file;
