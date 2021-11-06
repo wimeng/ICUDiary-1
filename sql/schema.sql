@@ -30,6 +30,7 @@ CREATE TABLE text_entries(
   writer VARCHAR(20) NOT NULL,
   patient VARCHAR(20) NOT NULL,
   created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  transcription VARCHAR(1000),
   FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
 );
 
@@ -40,6 +41,7 @@ CREATE TABLE audio_entries(
   writer VARCHAR(20) NOT NULL,
   patient VARCHAR(20) NOT NULL,
   created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  transcription VARCHAR(1000) NOT NULL,
   FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
 );
 

@@ -8,12 +8,27 @@
     </p>
     {% for entry in entries %}
         {{entry.entryname}}
+        <br>
+        <br>
         {% if entry.entrytext[-4:] == '.mp3' %}
         <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls'></audio>
+        <br>
+        {{entry.transcription}}
+        <br>
         {% else %}
+        <br>
         {{entry.entrytext}}
+        <br>
+        {% endif %}
+        From,
+        {% if entry.photo != "" %}
+            <img src="{{url_for('file_func', file = entry.photo)}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
+        {% else %}
+            <img src="{{url_for('static_func', file = 'Default.png')}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
         {% endif %}
         {{entry.writer}}
+        <br>
+        Time of Entry: 
         {{entry.created}}
         <hr/>
     {% endfor %}

@@ -21,11 +21,7 @@ const Dictaphone = () => {
 
   return (
     <div>
-      <p>Microphone: {listening ? 'on' : 'off'}</p>
-      <button onClick={SpeechRecognition.startListening}>Start</button>
-      <button onClick={SpeechRecognition.stopListening}>Stop</button>
-      <button onClick={resetTranscript}>Reset</button>
-      <p>{transcript}</p>
+      <p style={{display: "none"}} id="transcriptId">{transcript}</p>
     </div>
   );
 };
@@ -46,7 +42,8 @@ class Audio extends React.Component {
        entryTitle: '',
        patientDropdown: [],
        patient: '',
-       title: ''
+       title: '',
+       transcription: ''
     };
 
     this.submitEntry = this.submitEntry.bind(this);
@@ -79,7 +76,8 @@ class Audio extends React.Component {
       .then((data) => {
         this.setState({
           patientDropdown : data.patients,
-          patient: (data.patients ? data.patients[0].username : '')
+          patient: (data.patients ? data.patients[0].username : ''),
+          transcript: ''
         });
       })
       .catch((error) => console.log(error));
@@ -89,6 +87,7 @@ class Audio extends React.Component {
     if (this.state.isBlocked) {
       console.log('Permission Denied');
     } else {
+      SpeechRecognition.startListening({continuous: true})
       Mp3Recorder
         .start()
         .then(() => {
@@ -105,25 +104,27 @@ class Audio extends React.Component {
         console.log(buffer, blob);
         const file = new File(buffer, 'music.mp3', {
           type: blob.type,
-          lastModified: Date.now()
+          lastModified: Date.now(),
         });
 
-        this.setState({ file: file, isRecording: false });
+        this.setState({ file: file, isRecording: false, transcript: document.getElementById('transcriptId').innerHTML });
       }).catch((e) => console.log(e));
+    SpeechRecognition.stopListening()
   };
 
   reset = () => {
-    this.state.resetTranscript();
+    SpeechRecognition.resetTranscript();
   };
 
   submitEntry = (event) => {
-    const { title, patient, file } = this.state;
+    const { title, patient, transcript, file } = this.state;
     event.preventDefault();
     var formData = new FormData();
 
     formData.append("type", "audio");
     formData.append("title", title);
     formData.append("patient", patient);
+    formData.append("transcript", transcript);
     formData.append("file", file);
 
     var request = new XMLHttpRequest();
@@ -155,11 +156,17 @@ class Audio extends React.Component {
     }));
   }
 
+  handleTranscriptChange(event) {
+    event.preventDefault();
+    this.setState(() => ({
+        transcript: event.target.value,
+    }));
+  }
+
   render() {
-    let { patientDropdown } = this.state;
+    let { patientDropdown, transcript } = this.state;
     return (
       <div>
-        <Dictaphone></Dictaphone>
         <button onClick={this.start} disabled={this.state.isRecording}>
           Record
         </button><button onClick={this.stop} disabled={!this.state.isRecording}>
@@ -176,7 +183,10 @@ class Audio extends React.Component {
           <div class="d-flex justify-content-center">
             <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" onChange={(e) => this.handleTitleChange(e)}/>
           </div>
-          
+          <Dictaphone></Dictaphone>
+          Transcription:
+          <br></br>
+          <textarea style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcript} onChange={(e) => this.handleTranscriptChange(e)}/>
           <div class="d-flex justify-content-center">
             <input type="submit" name="createEntry" value="Create Entry"/>
           </div>

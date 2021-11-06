@@ -58,15 +58,14 @@ def newentry():
     context = common_context()
     
     connect = ICUDiary.model.get_db()
-    
     if request.method == "POST":
         if request.form['type'] == 'text':
             entry_title = request.form['entrytitle']
             entry_text = request.form['entry']
             selected_patient = request.form['patient']
             connect.execute(
-                "INSERT INTO text_entries(entryname, entrytext, writer, patient) "
-                "VALUES (?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, )
+                "INSERT INTO text_entries(entryname, entrytext, writer, patient, transcription, filename) "
+                "VALUES (?, ?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, "")
             )
             return flask.redirect("/archive/")
         
@@ -92,13 +91,12 @@ def newentry():
             entry_title = request.form['title']
             entry_audio = path
             selected_patient = request.form['patient']
+            transcript = request.form['transcript']
             connect.execute(
-                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient) "
-                "VALUES (?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, )
+                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient, transcription, filename) "
+                "VALUES (?, ?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, transcript)
             )
-            print(selected_patient)
-            print(uuid_basename)
-            print('hello')
+
             return flask.redirect("/archive/")
 
     return flask.render_template("recording.html", **context)
@@ -135,6 +133,15 @@ def archive():
             "WHERE writer = ? "
             "ORDER BY created DESC ", (flask.session["user"],flask.session["user"])
         ).fetchall()
+
+        for entry in message:
+            picture = connect.execute(
+                "SELECT filename "
+                "FROM users "
+                "WHERE username = ? ",
+                (entry["writer"],)
+            ).fetchone()
+            entry['photo'] = picture['filename']
         context["entries"] = message
 
     if curr_role == "Patient":
@@ -156,6 +163,16 @@ def archive():
             (pcode, pcode)
         ).fetchall()
 
+        for entry in message:
+            picture = connect.execute(
+                "SELECT filename "
+                "FROM users "
+                "WHERE username = ? ",
+                (entry["writer"],)
+            ).fetchone()
+            entry['photo'] = picture['filename']
+
+        print(message[0]['photo'])
         # # example test code delete later
         # audio_message = connect.execute(
         #     "SELECT * "
@@ -164,7 +181,6 @@ def archive():
         #     "ORDER BY audio_entries.created DESC",
         #     (pcode,)
         # ).fetchall()
-
 
         context["entries"] = message
         # context["audio_entries"] = audio_message
@@ -189,6 +205,14 @@ def archive():
             (scode,scode)
         ).fetchall()
 
+        for entry in message:
+            picture = connect.execute(
+                "SELECT filename "
+                "FROM users "
+                "WHERE username = ? ",
+                (entry["writer"],)
+            ).fetchone()
+            entry['photo'] = picture['filename']
 
         context["entries"] = message
     
