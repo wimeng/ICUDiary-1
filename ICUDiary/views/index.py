@@ -30,6 +30,12 @@ def common_context():
                 "WHERE username = ? ", (flask.session["user"],)
             ).fetchone()
             patientname = cur['firstname'] + " " + cur['lastname'] 
+
+            notif = connect.execute(
+                "SELECT notifcount FROM patient WHERE username = ? ", (flask.session["user"],)
+            ).fetchone()
+            context['notifcount'] = notif['notifcount']
+
         elif context['role'] == 'Superuser':
             scode = connect.execute(
                 "SELECT superusercode FROM superuser "

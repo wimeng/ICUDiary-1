@@ -14,6 +14,13 @@
                         {{patient}}'s diary 
                     {% endif %}
                 {% endif %}
+                {% if role == 'Patient' and notifcount != 0 %}
+                <a href="/archive/"> 
+                    <button type="button" class="btn btn-secondary">
+                        Unread <span class="badge badge-light">{{notifcount}}</span>
+                    </button>
+                </a>
+                {% endif %}
             </span>
             <span style="width: 33.33333%; text-align: right;">
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
@@ -23,7 +30,7 @@
                         <a href="/"><img src="{{url_for('static_func', file = 'Default.png')}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
                     {% endif %}
                     {{user}}
-                    
+
                     <input type="submit" name="logout" value="Logout"/>
                 </form>
             </span>

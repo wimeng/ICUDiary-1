@@ -35,7 +35,13 @@ def common_context():
                 "SELECT * FROM users "
                 "WHERE username = ? ", (flask.session["user"],)
             ).fetchone()
-            patientname = cur['firstname'] + " " + cur['lastname'] 
+            patientname = cur['firstname'] + " " + cur['lastname']
+
+            notif = connect.execute(
+                "SELECT notifcount FROM patient WHERE username = ? ", (flask.session["user"],)
+            ).fetchone()
+            context['notifcount'] = notif['notifcount']
+
         elif context['role'] == 'Superuser':
             scode = connect.execute(
                 "SELECT superusercode FROM superuser "
@@ -125,9 +131,9 @@ def create_user():
             patient_hash.update(username.encode('utf-8'))
             patientcode = patient_hash.hexdigest()[0:12].upper()
             connect.execute(
-            "INSERT INTO patient(username, patientcode) "
-            "VALUES (?, ?) ",
-            (username, patientcode)
+            "INSERT INTO patient(username, patientcode, notifcount) "
+            "VALUES (?, ?, ?) ",
+            (username, patientcode, 0)
             )
 
             superuser_hash = hashlib.new(algorithm)

@@ -1,7 +1,7 @@
 {% extends 'unauth-base.html' %}
 
 {% block body %}
-    <form action="/accounts/create/" id="create" method="post" name="create" enctype="multipart/form-data">
+    <form action="/accounts/create/" id="create" onsubmit="return validateForm()" method="post" name="create" enctype="multipart/form-data">
         <span>Photo </span><input type="file" name="file">
         <br>
         <span>First Name </span><input type="text" name="firstname" required/>
@@ -10,9 +10,10 @@
         <br>
         <span>Username </span><input type="text" name="username" required/>
         <br>
-        <span>Email </span><input type="text" name="email" required/>
+        <span>Email </span><input type="email" name="email" required/>
         <br>
         <div id="strengthCheckedPassword"></div>
+        <span id="isStrong" style="color: red" class="d-flex justify-content-center"></span>
         <br>
         <!-- <span>Role </span><input type="text" name="role"/> -->
         <label for="role"> Select your role:</label>
@@ -29,4 +30,13 @@
         Have an account? <a href="/accounts/login/"><b>Log in</b></a>
     </p>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+    <script>
+        function validateForm() {
+            let strength = document.getElementById("strengthCheckedPassword").lastElementChild.lastElementChild.lastElementChild.innerHTML;
+            if (!(strength == "good" || strength == "strong")) {
+                document.getElementById("isStrong").innerHTML = "Please enter a stronger password"
+                return false;
+            }
+        }
+    </script>
 {% endblock %}

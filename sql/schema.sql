@@ -20,6 +20,7 @@ CREATE TABLE superuser(
 CREATE table patient(
   username VARCHAR(20),
   patientcode VARCHAR(20) NOT NULL,
+  notifcount INTEGER,
   FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 

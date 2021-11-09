@@ -35,6 +35,12 @@ def common_context():
                 "WHERE username = ? ", (flask.session["user"],)
             ).fetchone()
             patientname = cur['firstname'] + " " + cur['lastname'] 
+
+            notif = connect.execute(
+                "SELECT notifcount FROM patient WHERE username = ? ", (flask.session["user"],)
+            ).fetchone()
+            context['notifcount'] = notif['notifcount']
+
         elif context['role'] == 'Superuser':
             scode = connect.execute(
                 "SELECT superusercode FROM superuser "
@@ -64,9 +70,16 @@ def newentry():
             entry_text = request.form['entry']
             selected_patient = request.form['patient']
             connect.execute(
-                "INSERT INTO text_entries(entryname, entrytext, writer, patient, transcription, filename) "
+                "INSERT INTO text_entries(entryname, entrytext, writer, patient, transcription) "
                 "VALUES (?, ?, ?, ?, ?) ", (entry_title, entry_text, flask.session['user'], selected_patient, "")
             )
+
+            connect.execute(
+                "UPDATE patient "
+                "SET notifcount = notifcount + 1 "
+                "WHERE username = ? ",(selected_patient,)
+            )
+
             return flask.redirect("/archive/")
         
         if request.form['type'] == 'audio':
@@ -93,8 +106,14 @@ def newentry():
             selected_patient = request.form['patient']
             transcript = request.form['transcript']
             connect.execute(
-                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient, transcription, filename) "
+                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient, transcription) "
                 "VALUES (?, ?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, transcript)
+            )
+
+            connect.execute(
+                "UPDATE patient "
+                "SET notifcount = notifcount + 1 "
+                "WHERE username = ? ",(selected_patient,)
             )
 
             return flask.redirect("/archive/")
@@ -172,7 +191,6 @@ def archive():
             ).fetchone()
             entry['photo'] = picture['filename']
 
-        print(message[0]['photo'])
         # # example test code delete later
         # audio_message = connect.execute(
         #     "SELECT * "
@@ -181,6 +199,13 @@ def archive():
         #     "ORDER BY audio_entries.created DESC",
         #     (pcode,)
         # ).fetchall()
+
+        connect.execute(
+            "UPDATE patient "
+            "SET notifcount = 0 "
+            "WHERE username = ? ",(flask.session['user'],)
+        )
+        context["notifcount"] = 0
 
         context["entries"] = message
         # context["audio_entries"] = audio_message

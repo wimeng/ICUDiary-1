@@ -35,7 +35,7 @@ class StrengthChecker extends React.Component {
       <span className="buttons">
         <span>Password </span>
         <input type="password" name="password" onChange={(e) => {this.handleChange(e)}} value={password} required/>
-        <PasswordStrengthBar password={password}></PasswordStrengthBar>
+        <PasswordStrengthBar password={password} onChangeScore={(score, feedback) => {console.log(feedback); console.log(document.getElementById("strengthCheckedPassword").lastElementChild.lastElementChild.lastElementChild.innerHTML);}}></PasswordStrengthBar>
       </span>
     );
   }
