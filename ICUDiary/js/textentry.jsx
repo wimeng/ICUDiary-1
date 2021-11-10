@@ -30,7 +30,7 @@ componentDidMount() {
       })
       .then((data) => {
         this.setState({
-          maxChars: 250,
+          maxChars: 500,
           textInput: "",
           entryTitle: "",
           patientDropdown : data.patients,
@@ -41,10 +41,10 @@ componentDidMount() {
 
 handleChange(event) {
     event.preventDefault();
-    if (250 - event.target.value.length >= 0) {
+    if (500 - event.target.value.length >= 0) {
         this.setState(() => ({
             textInput: event.target.value,
-            maxChars: 250 - event.target.value.length,
+            maxChars: 500 - event.target.value.length,
         }));
     }
   }

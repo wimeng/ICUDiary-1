@@ -11,12 +11,14 @@
             <span style="color: darkblue; width: 33.33333%; text-align: center;">
                 {% if patient %}
                     {% if role != 'User' %}
-                        {{patient}}'s diary 
+                        {{patient}}'s diary
+                    {% elif role == 'Superuser' %}
+
                     {% endif %}
                 {% endif %}
                 {% if role == 'Patient' and notifcount != 0 %}
                 <a href="/archive/"> 
-                    <button type="button" class="btn btn-secondary">
+                    <button type="button" class="btn btn-danger">
                         Unread <span class="badge badge-light">{{notifcount}}</span>
                     </button>
                 </a>

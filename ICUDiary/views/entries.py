@@ -155,12 +155,14 @@ def archive():
 
         for entry in message:
             picture = connect.execute(
-                "SELECT filename "
+                "SELECT filename, firstname, lastname "
                 "FROM users "
                 "WHERE username = ? ",
                 (entry["writer"],)
             ).fetchone()
             entry['photo'] = picture['filename']
+            entry['firstname'] = picture['firstname']
+            entry['lastname'] = picture['lastname']
         context["entries"] = message
 
     if curr_role == "Patient":
@@ -184,12 +186,14 @@ def archive():
 
         for entry in message:
             picture = connect.execute(
-                "SELECT filename "
+                "SELECT filename, firstname, lastname "
                 "FROM users "
                 "WHERE username = ? ",
                 (entry["writer"],)
             ).fetchone()
             entry['photo'] = picture['filename']
+            entry['firstname'] = picture['firstname']
+            entry['lastname'] = picture['lastname']
 
         # # example test code delete later
         # audio_message = connect.execute(
@@ -232,12 +236,14 @@ def archive():
 
         for entry in message:
             picture = connect.execute(
-                "SELECT filename "
+                "SELECT filename, firstname, lastname "
                 "FROM users "
                 "WHERE username = ? ",
                 (entry["writer"],)
             ).fetchone()
             entry['photo'] = picture['filename']
+            entry['firstname'] = picture['firstname']
+            entry['lastname'] = picture['lastname']
 
         context["entries"] = message
     
