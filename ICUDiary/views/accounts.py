@@ -219,6 +219,8 @@ def edit_password():
         return flask.redirect("accounts/login/")
 
     context = common_context()
+    context["no_match"] = False
+    context["incorrect"] = False
 
     connect = ICUDiary.model.get_db()
     # gets username, password, stores into
@@ -226,12 +228,13 @@ def edit_password():
     # check that username exists and password
     # matches, otherwise abort(403)
     if request.method == "POST":
-        old_password = request.form["password"]
-        new_password = request.form["new_password"]
-        new_password2 = request.form["new_password_check"]
+        old_password = request.form["old_password"]
+        new_password = request.form["password"]
+        new_password2 = request.form["new_password"]
 
         if new_password != new_password2:
-            abort(401)
+            context = { "no_match" : True}
+            return flask.render_template("password.html", **context)
 
         cur_pass = connect.execute(
             "SELECT password "
@@ -245,6 +248,7 @@ def edit_password():
         algorithm, salt, password_db_hash = correct_pass.split("$")
 
         # hashing the password
+        # checking if old_password matches one in database
         algorithm = 'sha512'
         hash_obj = hashlib.new(algorithm)
         password_salted = salt + old_password
@@ -252,9 +256,10 @@ def edit_password():
         password_user_hash = hash_obj.hexdigest()
 
         if password_db_hash != password_user_hash:
-            abort(403)
+            context = { "incorrect" : True}
+            return flask.render_template("password.html", **context)
 
-        # checking if old_password matches one in database
+        # updating password in database
         algorithm = 'sha512'
         salt = uuid.uuid4().hex
         hash_obj = hashlib.new(algorithm)
