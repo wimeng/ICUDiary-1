@@ -6,46 +6,75 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style = "background-color: #e3f2fd !important;">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
                     <img src="{{url_for('static_func', file = 'DiaryLogo.png')}}" alt="" class="d-inline-block align-middle img-fluid">
-                    ICYou 
+                    <span class = "h3">ICYou</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav me-auto h4">
                         <li class="nav-item">
                             <a class="nav-link" href="/newentry/">Make an Entry</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/archive/">View Archive</a>
                         </li>
-                        <!-- TODO: add page-specific menus? -->
+
+                        {% if role == 'User' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/accounts/patientcode/">Enter Patient Codes</a>
+                            </li>
+                        {% elif role == 'Superuser' and not usesPatient %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/accounts/superuser/">Enter Codes</a>
+                            </li>
+                        {% elif role == 'Superuser' and usesPatient %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/showcodes/">Access Codes</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Access Codes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Edit Profile</a>
+                            <a class="nav-link" href="/accounts/edit/">Edit Profile</a>
                         </li>
                     </ul>
-                    <span class="navbar-text">
-                        <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="small">
-                            {% if filename != "" %}
-                                <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
-                            {% else %}
-                                <a href="/"><img src="{{url_for('static_func', file = 'Default.png')}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+
+                    <!-- diary information -->
+                    <span class="navbar-text me-2 h4">
+                        {% if role == 'Patient' and notifcount != 0 %}
+                            <a href="/archive/"> 
+                                <button type="button" class="btn btn-danger">
+                                    Unread <span class="badge badge-light">{{notifcount}}</span>
+                                </button>
+                            </a>
+                        {% endif %}
+                        {% if patient %}
+                            {% if role != 'User' %}
+                                {{patient}}'s diary
+                            {% elif role == 'Superuser' %}
+
                             {% endif %}
-                            {{user}}
-                            <input type="submit" name="logout" value="Logout"/>
-                        </form>
+                        {% endif %}
                     </span>
+                    <!-- logout form -->
+                    <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="h4">
+                        {% if filename != "" %}
+                            <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                        {% else %}
+                            <a href="/"><img src="{{url_for('static_func', file = 'Default.png')}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                        {% endif %}
+                        {{user}}
+                        <input type="submit" name="logout" value="Logout"/>
+                    </form>
                 </div>
             </div>
         </nav>
 
+        <!--
         <h1 class="p-3 mb-2 text-white" style="width: 100%; display: flex; flex-flow: row wrap; background-color:lightskyblue;">
             <span style="width: 33.33333%;"><a href="/"><img src="{{url_for('static_func', file = 'DiaryLogo.png')}}"></a> <span>ICYou</span></span>
             <span style="color: darkblue; width: 33.33333%; text-align: center;">
@@ -77,6 +106,7 @@
                 </form>
             </span>
         </h1>
+        -->
         <a style="float: right;" href="/help/"><img width="75" height="75" src="{{url_for('static_func', file = 'help.png')}}"></a>
         <br>
         
