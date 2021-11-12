@@ -121,79 +121,79 @@ def newentry():
     return flask.render_template("recording.html", **context)
 
 # THE REAL ENDPOINT FOR THIS IS /archive/, THIS IS TEMPORARILY SET FOR THE DEMO
-@ICUDiary.app.route("/archive/")
+@ICUDiary.app.route("/archive/", methods=['POST', 'GET'])
 def archive():
     """Send file."""
+    if request.method == "GET":
+        if logged() is False:
+            return flask.redirect("/accounts/login/")
+        context = common_context()
 
-    if logged() is False:
-        return flask.redirect("/accounts/login/")
-    context = common_context()
+        # authenticate that only patient and superuser can view archive
+        connect = ICUDiary.model.get_db()
 
-    # authenticate that only patient and superuser can view archive
-    connect = ICUDiary.model.get_db()
-
-    role = connect.execute(
-        "SELECT role "
-        "FROM users "
-        "WHERE username = ?", (flask.session["user"],)
-    )
+        role = connect.execute(
+            "SELECT role "
+            "FROM users "
+            "WHERE username = ?", (flask.session["user"],)
+        )
     
-    curr_role = role.fetchall()[0]['role']
-    print(curr_role)
+        curr_role = role.fetchall()[0]['role']
+        print(curr_role)
 
-    if curr_role == "User":
-        message = connect.execute(
-            "SELECT * "
-            "FROM text_entries "
-            "WHERE writer = ?"
-            "UNION "
-            "SELECT * "
-            "FROM audio_entries "
-            "WHERE writer = ? "
-            "ORDER BY created DESC ", (flask.session["user"],flask.session["user"])
-        ).fetchall()
+        if curr_role == "User":
+            message = connect.execute(
+                "SELECT * "
+                "FROM text_entries "
+                "WHERE writer = ?"
+                "UNION "
+                "SELECT * "
+                "FROM audio_entries "
+                "WHERE writer = ? "
+                "ORDER BY created DESC ", (flask.session["user"],flask.session["user"])
+            ).fetchall()
 
-        for entry in message:
-            picture = connect.execute(
-                "SELECT filename, firstname, lastname "
-                "FROM users "
-                "WHERE username = ? ",
-                (entry["writer"],)
-            ).fetchone()
-            entry['photo'] = picture['filename']
-            entry['firstname'] = picture['firstname']
-            entry['lastname'] = picture['lastname']
-        context["entries"] = message
+            for entry in message:
+                picture = connect.execute(
+                    "SELECT filename, firstname, lastname "
+                    "FROM users "
+                    "WHERE username = ? ",
+                    (entry["writer"],)
+                ).fetchone()
+                entry['photo'] = picture['filename']
+                entry['firstname'] = picture['firstname']
+                entry['lastname'] = picture['lastname']
+            context["entries"] = message
 
-    if curr_role == "Patient":
-        pcode = connect.execute(
-            "SELECT patientcode "
-            "FROM patient "
-            "WHERE username = ?",(flask.session['user'],)
-        ).fetchone()['patientcode']
+        if curr_role == "Patient":
+            pcode = connect.execute(
+                "SELECT patientcode "
+                "FROM patient "
+                "WHERE username = ?",(flask.session['user'],)
+            ).fetchone()['patientcode']
         
-        message = connect.execute(
-            "SELECT * "
-            "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
-            "WHERE patientcode = ? "
-            "UNION "
-            "SELECT * "
-            "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
-            "WHERE patientcode = ? "
-            "ORDER BY created DESC ",
-            (pcode, pcode)
-        ).fetchall()
+            message = connect.execute(
+                "SELECT * "
+                "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
+                "WHERE patientcode = ? "
+                "UNION "
+                "SELECT * "
+                "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+                "WHERE patientcode = ? "
+                "ORDER BY created DESC ",
+                (pcode, pcode)
+            ).fetchall()
 
-        for entry in message:
-            picture = connect.execute(
-                "SELECT filename, firstname, lastname "
-                "FROM users "
-                "WHERE username = ? ",
-                (entry["writer"],)
-            ).fetchone()
-            entry['photo'] = picture['filename']
-            entry['firstname'] = picture['firstname']
-            entry['lastname'] = picture['lastname']
+            for entry in message:
+                picture = connect.execute(
+                    "SELECT filename, firstname, lastname "
+                    "FROM users "
+                    "WHERE username = ? ",
+                    (entry["writer"],)
+                ).fetchone()
+                entry['photo'] = picture['filename']
+                entry['firstname'] = picture['firstname']
+                entry['lastname'] = picture['lastname']
 
         # # example test code delete later
         # audio_message = connect.execute(
@@ -204,51 +204,266 @@ def archive():
         #     (pcode,)
         # ).fetchall()
 
-        connect.execute(
-            "UPDATE patient "
-            "SET notifcount = 0 "
-            "WHERE username = ? ",(flask.session['user'],)
-        )
-        context["notifcount"] = 0
+            connect.execute(
+                "UPDATE patient "
+                "SET notifcount = 0 "
+                "WHERE username = ? ",(flask.session['user'],)
+            )
+            context["notifcount"] = 0
 
-        context["entries"] = message
-        # context["audio_entries"] = audio_message
+            context["entries"] = message
+            # context["audio_entries"] = audio_message
 
-    if curr_role == "Superuser":
-        scode = connect.execute(
-            "SELECT superusercode "
-            "FROM superuser "
-            "WHERE username = ?",(flask.session['user'],)
-        ).fetchone()['superusercode']
+        if curr_role == "Superuser":
+            scode = connect.execute(
+                "SELECT superusercode "
+                "FROM superuser "
+                "WHERE username = ?",(flask.session['user'],)
+            ).fetchone()['superusercode']
         
 
-        message = connect.execute(
-            "SELECT * "
-            "FROM text_entries JOIN superuser ON (text_entries.patient = superuser.username) "
-            "WHERE superusercode = ? "
-            "UNION "
-            "SELECT * "
-            "FROM audio_entries JOIN superuser ON (audio_entries.patient = superuser.username) "
-            "WHERE superusercode = ? "
-            "ORDER BY created DESC ",
-            (scode,scode)
-        ).fetchall()
+            message = connect.execute(
+                "SELECT * "
+                "FROM text_entries JOIN superuser ON (text_entries.patient = superuser.username) "
+                "WHERE superusercode = ? "
+                "UNION "
+                "SELECT * "
+                "FROM audio_entries JOIN superuser ON (audio_entries.patient = superuser.username) "
+                "WHERE superusercode = ? "
+                "ORDER BY created DESC ",
+                (scode,scode)
+            ).fetchall()
 
-        for entry in message:
-            picture = connect.execute(
-                "SELECT filename, firstname, lastname "
-                "FROM users "
-                "WHERE username = ? ",
-                (entry["writer"],)
-            ).fetchone()
-            entry['photo'] = picture['filename']
-            entry['firstname'] = picture['firstname']
-            entry['lastname'] = picture['lastname']
+            for entry in message:
+                picture = connect.execute(
+                    "SELECT filename, firstname, lastname "
+                    "FROM users "
+                    "WHERE username = ? ",
+                    (entry["writer"],)
+                ).fetchone()
+                entry['photo'] = picture['filename']
+                entry['firstname'] = picture['firstname']
+                entry['lastname'] = picture['lastname']
 
-        context["entries"] = message
+            context["entries"] = message
     
 
-    return flask.render_template("archive.html", **context)
+        return flask.render_template("archive.html", **context)
+
+    if request.method == "POST":
+        if logged() is False:
+            return flask.redirect("/accounts/login/")
+        context = common_context()
+
+        # authenticate that only patient and superuser can view archive
+        connect = ICUDiary.model.get_db()
+
+        role = connect.execute(
+                "SELECT role "
+                "FROM users "
+                "WHERE username = ?", (flask.session["user"],)
+        )
+        curr_role = role.fetchall()[0]['role']
+        print(curr_role)
+
+        if (request.form["sort"] == "newest"):
+
+            if curr_role == "User":
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries "
+                    "WHERE writer = ?"
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries "
+                    "WHERE writer = ? "
+                    "ORDER BY created DESC ", (flask.session["user"],flask.session["user"])
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+                context["entries"] = message
+
+            if curr_role == "Patient":
+                pcode = connect.execute(
+                    "SELECT patientcode "
+                    "FROM patient "
+                    "WHERE username = ?",(flask.session['user'],)
+                ).fetchone()['patientcode']
+        
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
+                    "WHERE patientcode = ? "
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+                    "WHERE patientcode = ? "
+                    "ORDER BY created DESC ",
+                    (pcode, pcode)
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+
+                connect.execute(
+                    "UPDATE patient "
+                    "SET notifcount = 0 "
+                    "WHERE username = ? ",(flask.session['user'],)
+                )
+                context["notifcount"] = 0
+
+                context["entries"] = message
+
+            if curr_role == "Superuser":
+                scode = connect.execute(
+                    "SELECT superusercode "
+                    "FROM superuser "
+                    "WHERE username = ?",(flask.session['user'],)
+                ).fetchone()['superusercode']
+        
+
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries JOIN superuser ON (text_entries.patient = superuser.username) "
+                    "WHERE superusercode = ? "
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries JOIN superuser ON (audio_entries.patient = superuser.username) "
+                    "WHERE superusercode = ? "
+                    "ORDER BY created DESC ",
+                    (scode,scode)
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+
+                context["entries"] = message
+
+            return flask.render_template("archive.html", **context)
+
+        elif(request.form["sort"] =="oldest"):
+            if curr_role == "User":
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries "
+                    "WHERE writer = ?"
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries "
+                    "WHERE writer = ? "
+                    "ORDER BY created ASC ", (flask.session["user"],flask.session["user"])
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+                context["entries"] = message
+
+            if curr_role == "Patient":
+                pcode = connect.execute(
+                    "SELECT patientcode "
+                    "FROM patient "
+                    "WHERE username = ?",(flask.session['user'],)
+                ).fetchone()['patientcode']
+        
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries JOIN patient ON (text_entries.patient = patient.username) "
+                    "WHERE patientcode = ? "
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries JOIN patient ON (audio_entries.patient = patient.username) "
+                    "WHERE patientcode = ? "
+                    "ORDER BY created ASC ",
+                    (pcode, pcode)
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+
+                connect.execute(
+                    "UPDATE patient "
+                    "SET notifcount = 0 "
+                    "WHERE username = ? ",(flask.session['user'],)
+                )
+                context["notifcount"] = 0
+
+                context["entries"] = message
+
+            if curr_role == "Superuser":
+                scode = connect.execute(
+                    "SELECT superusercode "
+                    "FROM superuser "
+                    "WHERE username = ?",(flask.session['user'],)
+                ).fetchone()['superusercode']
+        
+
+                message = connect.execute(
+                    "SELECT * "
+                    "FROM text_entries JOIN superuser ON (text_entries.patient = superuser.username) "
+                    "WHERE superusercode = ? "
+                    "UNION "
+                    "SELECT * "
+                    "FROM audio_entries JOIN superuser ON (audio_entries.patient = superuser.username) "
+                    "WHERE superusercode = ? "
+                    "ORDER BY created ASC ",
+                    (scode,scode)
+                ).fetchall()
+
+                for entry in message:
+                    picture = connect.execute(
+                        "SELECT filename, firstname, lastname "
+                        "FROM users "
+                        "WHERE username = ? ",
+                        (entry["writer"],)
+                    ).fetchone()
+                    entry['photo'] = picture['filename']
+                    entry['firstname'] = picture['firstname']
+                    entry['lastname'] = picture['lastname']
+
+                context["entries"] = message
+
+            return flask.render_template("archive.html", **context)
 
 @ICUDiary.app.route("/archive/1/")
 def archive1():

@@ -3,9 +3,24 @@
 {% block body %}
     <!-- Page where you can create a recording for a diary entry -->
     <!-- link to record -->
-    <p>
+    <div class="d-flex justify-content-between">
         <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" href="/newentry/"><b>Make an entry</b></a>
-    </p>
+    
+        <div class="dropdown">
+            <form action="/archive/" method="POST">
+                <select name="sort" class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightblue" type="button" id="sortMenu" aria-haspopup="true" aria-expanded="false" onchange="this.form.submit()">
+                <!-- <b>Sort by</b> -->
+                <!-- <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> -->
+                    <option value="none" selected disabled hidden><b>Sort By</b></option>
+                    <option value="newest">Newest to Oldest</option>
+                    <option value="oldest">Oldest to Newest</option>
+                <!-- </div> -->
+                </select>
+            </form>
+        </div>
+    </div>
+    <br>
+    <br>
     {% for entry in entries %}
         <div style="background-color: lightgray; border-color: grey; border-style: double;">
             <h3 style="font-weight: bold; text-align: center;">{{entry.entryname}}</h3>
@@ -49,4 +64,13 @@
             <input type="submit" name="logout" value="Logout"/>
           </form>
     </p> -->
+
+    <!-- <script type="text/javascript">
+        function newest() {
+            
+        }
+        function oldest() {
+
+        }
+    </script> -->
 {% endblock %}
