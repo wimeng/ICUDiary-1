@@ -44,12 +44,14 @@ class Form extends React.Component {
     return (
       <div className="buttons">
         <div>
-            <div class="d-flex justify-content-center">
+            <span class="d-flex justify-content-center">
                 <input className="btn btn-outline-info my-2 my-sm-0" type="submit" value="Text Entry" onClick={this.handleTextClick}/>
-            </div>
-            <div class="d-flex justify-content-center">
+            </span>
+            <br></br>
+            <span class="d-flex justify-content-center">
                 <input className="btn btn-outline-info my-2 my-sm-0" type="submit" value="Audio Entry" onClick={this.handleAudioClick}/>
-            </div>
+            </span>
+            <br/>
           {entryType === "text" && <Text/>}
 
           {entryType === "audio" && <Audio/>}

@@ -12,8 +12,10 @@
             Here are your codes! Copy and share them with people to let them make diary entries!
         </div>
         <br>
-        <span>Patient Code: </span> 
-        <span id="patientCode">{{patientcode}}</span> <input type="image" src="{{url_for('static_func', file = 'copy.png')}}" onclick="copyPatientCode()" height="25px" width="25px"></input>
+        <div align="center">
+            <span>Patient Code: </span> 
+            <span id="patientCode">{{patientcode}}</span> <input type="image" src="{{url_for('static_func', file = 'copy.png')}}" onclick="copyPatientCode()" height="25px" width="25px"></input>
+        </div>
         <!-- <br>
         <span>Superuser Code: </span>
         <span id="superuserCode">{{superusercode}}</span> <input type="image" src="{{url_for('static_func', file = 'copy.png')}}" onclick="copySuperuserCode()" height="25px" width="25px"></input> -->
