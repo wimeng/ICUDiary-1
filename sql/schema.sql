@@ -56,4 +56,10 @@ CREATE TABLE entries(
   FOREIGN KEY(writer) REFERENCES users(username) ON DELETE CASCADE
 );
 
+CREATE TABLE security_question(
+  question VARCHAR(20) NOT NULL,
+  answer VARCHAR(20) NOT NULL,
+  user VARCHAR(20) NOT NULL,
+  FOREIGN KEY(user) REFERENCES users(username) ON DELETE CASCADE
+);
 

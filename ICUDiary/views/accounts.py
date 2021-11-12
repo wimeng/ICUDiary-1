@@ -125,6 +125,15 @@ def create_user():
         )
 
         flask.session["user"] = username
+
+        # insert security question and answer into database
+        connect.execute(
+            "INSERT INTO security_question(question, answer, user) "
+            "VALUES (?, ?, ?) ",
+            (request.form['question'], request.form["answer"], flask.session["user"])
+
+        )
+
         if request.form["role"] == "Patient":
             # generate patient and superuser codes
             patient_hash = hashlib.new(algorithm)
@@ -538,6 +547,49 @@ def patientcode():
 
     return flask.render_template("patientcode.html", **context)
 
+@ICUDiary.app.route('/accounts/resetpassword/', methods=['POST', 'GET'])
+def forgotpassword():
+    """Reset Password."""
+    context = {"correct" : True }
+    if request.method == "POST":
+        username = request.form['username']
+        connect = ICUDiary.model.get_db()
+        security = connect.execute(
+            "SELECT * "
+            "FROM security_question "
+            "WHERE user = ? ", (username,)
+        ).fetchall()
+
+        ques = security[0]['question']
+        context["question"] = ques
+        ans = security[0]['answer']
+        
+        user_answer = request.form['answer']
+        ans_correct = True
+        if user_answer != ans:
+            ans_correct = False
+
+        context["correct"] = ans_correct
+        if ans_correct:
+            new_password = request.form['password']
+            # updating password in database
+            algorithm = 'sha512'
+            salt = uuid.uuid4().hex
+            hash_obj = hashlib.new(algorithm)
+            password_salted = salt + new_password
+            hash_obj.update(password_salted.encode('utf-8'))
+            password_hash = hash_obj.hexdigest()
+            password_db_string = "$".join([algorithm, salt, password_hash])
+
+            connect.execute(
+                "UPDATE users "
+                "SET password = ? "
+                "WHERE username = ? ", (password_db_string, username,)
+            ) 
+            flask.session["user"] = username
+            return flask.redirect('/')
+
+    return flask.render_template("resetpassword.html", **context)
 
 def logged():
     """User logged in check."""
