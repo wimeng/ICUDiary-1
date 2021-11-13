@@ -4,24 +4,31 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import 'regenerator-runtime/runtime';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { Navigate } from 'react-router-dom';
+import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
 
+const appId = '2813fd98-55cd-4318-abfa-f5dee6051457';
+const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
+SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
+let startListening = null;
+
 const Dictaphone = () => {
-  const {
+  let {
     transcript,
     listening,
-    resetTranscript,
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
+  startListening = () => SpeechRecognition.startListening({ continuous: true });
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
   }
 
   return (
-    <div>
-      <p style={{display: "none"}} id="transcriptId">{transcript}</p>
+    <div class="d-flex justify-content-center">
+      <div id="transcriptText">{transcript.toLowerCase()}</div>
+      {/* <textarea style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcript.toLowerCase()}/> */}
     </div>
   );
 };
@@ -84,10 +91,11 @@ class Audio extends React.Component {
     }
 
   start = () => {
+    event.preventDefault();
     if (this.state.isBlocked) {
       console.log('Permission Denied');
     } else {
-      SpeechRecognition.startListening({continuous: true})
+      startListening()
       Mp3Recorder
         .start()
         .then(() => {
@@ -97,6 +105,7 @@ class Audio extends React.Component {
   };
 
   stop = () => {
+    event.preventDefault();
     Mp3Recorder
       .stop()
       .getMp3()
@@ -106,10 +115,9 @@ class Audio extends React.Component {
           type: blob.type,
           lastModified: Date.now(),
         });
-
-        this.setState({ file: file, isRecording: false, transcript: document.getElementById('transcriptId').innerHTML });
+        SpeechRecognition.stopListening()
+        this.setState({ file: file, isRecording: false });
       }).catch((e) => console.log(e));
-    SpeechRecognition.stopListening()
   };
 
   reset = () => {
@@ -124,7 +132,7 @@ class Audio extends React.Component {
     formData.append("type", "audio");
     formData.append("title", title);
     formData.append("patient", patient);
-    formData.append("transcript", transcript);
+    formData.append("transcript", document.getElementById("transcriptText").innerHTML);
     formData.append("file", file);
 
     var request = new XMLHttpRequest();
@@ -167,11 +175,6 @@ class Audio extends React.Component {
     let { patientDropdown, transcript } = this.state;
     return (
       <div>
-        <button onClick={this.start} disabled={this.state.isRecording}>
-          Record
-        </button><button onClick={this.stop} disabled={!this.state.isRecording}>
-          Stop
-        </button><audio src={URL.createObjectURL(this.state.file)} controls="controls" />
         <form onSubmit={(e) => this.submitEntry(e)} method="post" enctype="multipart/form-data">
           <input type="hidden" name="type" value="audio"/>
           <div class="d-flex justify-content-center">
@@ -183,10 +186,22 @@ class Audio extends React.Component {
           <div class="d-flex justify-content-center">
             <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" onChange={(e) => this.handleTitleChange(e)}/>
           </div>
+          <br/>
+          <div class="d-flex justify-content-center">
+            <button onClick={this.start} disabled={this.state.isRecording}>
+              Record
+            </button><button onClick={this.stop} disabled={!this.state.isRecording}>
+              Stop
+            </button>
+          </div>
+          <div class="d-flex justify-content-center">
+            <audio src={URL.createObjectURL(this.state.file)} controls="controls" />
+          </div>
+          <div class="d-flex justify-content-center">
+            Transcription:
+          </div>
           <Dictaphone></Dictaphone>
-          Transcription:
-          <br></br>
-          <textarea style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcript} onChange={(e) => this.handleTranscriptChange(e)}/>
+          <br/>
           <div class="d-flex justify-content-center">
             <input type="submit" name="createEntry" value="Create Entry"/>
           </div>

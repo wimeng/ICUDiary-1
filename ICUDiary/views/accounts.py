@@ -550,9 +550,12 @@ def patientcode():
 @ICUDiary.app.route('/accounts/resetpassword/', methods=['POST', 'GET'])
 def forgotpassword():
     """Reset Password."""
-    context = {"correct" : True }
+    context = {"correct" : True,
+                "usergiven" : False}
     if request.method == "POST":
         username = request.form['username']
+        context["usergiven"] = True
+        context["username"] = username
         connect = ICUDiary.model.get_db()
         security = connect.execute(
             "SELECT * "
@@ -564,12 +567,13 @@ def forgotpassword():
         context["question"] = ques
         ans = security[0]['answer']
         
-        user_answer = request.form['answer']
-        ans_correct = True
-        if user_answer != ans:
-            ans_correct = False
+        ans_correct = False
+        if "answer" in request.form:
+            user_answer = request.form["answer"]
+            if user_answer == ans:
+                ans_correct = True
 
-        context["correct"] = ans_correct
+        context["correct"] = "answer" not in request.form
         if ans_correct:
             new_password = request.form['password']
             # updating password in database
