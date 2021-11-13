@@ -5,7 +5,7 @@
         <title>ICUDiary</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     </head>
-    <body style="background-image: url('../static/image/back.jpg')">
+    <body style="background-image: url('../static/image/back.png')">
         <nav class="navbar navbar-expand-lg navbar-light bg-light" style = "background-color: #e3f2fd !important;">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
@@ -35,7 +35,7 @@
                         {% elif role == 'Superuser' and usesPatient %}
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="/showcodes/">Access Codes</a>
+                                <a class="nav-link" href="/showcodes/">Access Code</a>
                             </li>
                         {% endif %}
                         <li class="nav-item">
@@ -47,7 +47,7 @@
                     <span class="navbar-text me-2 h4">
                         {% if role == 'Patient' and notifcount != 0 %}
                             <a href="/archive/"> 
-                                <button type="button" class="btn btn-danger">
+                                <button type="button" class="btn btn-danger me-3">
                                     Unread <span class="badge badge-light">{{notifcount}}</span>
                                 </button>
                             </a>
@@ -61,14 +61,14 @@
                         {% endif %}
                     </span>
                     <!-- logout form -->
-                    <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="h4">
+                    <form action="/accounts/logout/" method="post" enctype="multipart/form-data" class="h4 ms-3">
                         {% if filename != "" %}
-                            <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
+                            <a href="/"><img src="{{url_for('file_func', file = filename)}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture" class = "mx-3"></a>
                         {% else %}
                             <a href="/"><img src="{{url_for('static_func', file = 'Default.png')}}" width="75" height="75" style="border-radius: 75px;" alt="Profile Picture"></a>
                         {% endif %}
-                        {{user}}
-                        <input type="submit" name="logout" value="Logout"/>
+                        <span>{{user}}</span>
+                        <input class="btn btn-outline-primary btn-block btn-lg ms-3" style="background-color: lightgray" type="submit" name="logout" value="Logout"/>
                     </form>
                 </div>
             </div>

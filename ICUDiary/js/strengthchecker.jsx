@@ -32,13 +32,17 @@ class StrengthChecker extends React.Component {
   render() {
     let { password } = this.state;
     return (
-      <span className="buttons">
-        <span>Password </span>
-        <input type="password" name="password" onChange={(e) => {this.handleChange(e)}} value={password} required/>
-        <PasswordStrengthBar password={password} onChangeScore={(score, feedback) => {console.log(feedback); console.log(document.getElementById("strengthCheckedPassword").lastElementChild.lastElementChild.lastElementChild.innerHTML);}}></PasswordStrengthBar>
-      </span>
+      <React.Fragment>
+        <td>{this.props.adjective} Password </td>
+        <td><input type="password" name="password" onChange={(e) => {this.handleChange(e)}} value={password} required/></td>
+        <td><PasswordStrengthBar password={password}></PasswordStrengthBar></td>
+      </React.Fragment>
     );
   }
 }
+
+StrengthChecker.propTypes = {
+  adjective: PropTypes.string
+};
 
 export default StrengthChecker;

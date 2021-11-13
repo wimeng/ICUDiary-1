@@ -81,7 +81,7 @@ handleTitleChange(event) {
                 <textarea style={{resize: 'both'}} type="text" placeholder="Type Your Entry Here" name="entry" value={this.state.textInput} onChange={(e) => {this.handleChange(e)}}/>              
             </div>
             <p class="d-flex justify-content-center">Characters Remaining: {this.state.maxChars}</p> 
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
               <input type="submit" name="createEntry" value="Create Entry"/>
             </div>
         </form>

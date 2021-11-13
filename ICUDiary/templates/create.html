@@ -2,19 +2,30 @@
 
 {% block body %}
     <form action="/accounts/create/" id="create" onsubmit="return validateForm()" method="post" name="create" enctype="multipart/form-data">
-        <span>Photo </span><input type="file" name="file">
-        <br>
-        <span>First Name </span><input type="text" name="firstname" required/>
-        <br>
-        <span>Last Name </span><input type="text" name="lastname" required/>
-        <br>
-        <span>Username </span><input type="text" name="username" required/>
-        <br>
-        <span>Email </span><input type="email" name="email" required/>
-        <br>
-        <div id="strengthCheckedPassword"></div>
-        <span id="isStrong" style="color: red" class="d-flex justify-content-center"></span>
-        <br>
+        <table>
+            <tr>
+                <td>Photo </td>
+                <td><input type="file" name="file"></td>
+            </tr>
+            <tr>
+                <td>First Name </td>
+                <td><input type="text" name="firstname" required/></td>
+            </tr>
+            <tr>
+                <td>Last Name </td>
+                <td><input type="text" name="lastname" required/></td>
+            </tr>
+            <tr>
+                <td>Username </td>
+                <td><input type="text" name="username" required/></td>
+            </tr>
+            <tr>
+                <td>Email </td>
+                <td><input type="email" name="email" required/></td>
+            </tr>
+            <tr id="strengthCheckedPassword"></tr>
+            <span id="isStrong" style="color: red" class="d-flex justify-content-center"></span>
+        </table>
         <!-- <span>Role </span><input type="text" name="role"/> -->
         <label for="role"> Select your role:</label>
         <select name="role" id="role" required>
@@ -32,8 +43,8 @@
         </select>
         <span>Answer: </span><input type="text" name="answer" required/>
         <br>
-
-        <input type="submit" name="signup" value="Sign Up" />
+        <br>
+        <input class="btn btn-outline-primary btn-block btn-lg " style="background-color: lightgray" type="submit" name="signup" value="Sign Up" />
         <br>
     </form>
     <p>

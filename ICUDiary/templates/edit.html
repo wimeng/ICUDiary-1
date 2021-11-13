@@ -2,18 +2,28 @@
 
 {% block body %}
     <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-    <div class="d-grid gap-2 col-6 mx-auto my-auto">
+    <div class="d-grid gap-2 col-6 mx-auto my-auto" style="background-image: url('/ICUDiary/static/image/back.png')">
         <form align="center" action="/accounts/edit/" method="post" style="font-size: 25px" enctype="multipart/form-data">
-            <span>Photo </span><input type="file" name="file">
+            <table>
+                <tr>
+                    <td>Photo </td>
+                    <td><input type="file" name="file"></td>
+                </tr>
+                <tr>
+                    <td>First Name </td>
+                    <td><input type="text" name="firstname" value="{{firstname}}"/></td>
+                </tr>
+                <tr>
+                    <td>Last Name </td>
+                    <td><input type="text" name="lastname" value="{{lastname}}"/></td>
+                </tr>
+                <tr>
+                    <td>Email </td>
+                    <td><input type="email" name="email" value="{{email}}"/></td>
+                </tr>
+            </table>
             <br>
-            <span>First Name </span><input type="text" name="firstname" value="{{firstname}}"/>
-            <br>
-            <span>Last Name </span><input type="text" name="lastname" value="{{lastname}}"/>
-            <br>
-            <span>Email </span><input type="email" name="email" value="{{email}}"/>
-            <br>
-            <input type="submit" name="update" value="Submit"/>
-            <br>
+            <input class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" type="submit" name="update" value="Submit"/>
         </form>
     </div>
     <br/>

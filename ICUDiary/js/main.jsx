@@ -21,6 +21,10 @@ if (document.getElementById('strengthCheckedPassword')) {
   ReactDOM.render(<StrengthChecker/>,document.getElementById('strengthCheckedPassword'));
 }
 
+if (document.getElementById('strengthCheckedNewPassword')) {
+  ReactDOM.render(<StrengthChecker adjective="New"/>,document.getElementById('strengthCheckedNewPassword'));
+}
+
 // This method is only called once
 ReactDOM.render(
   // Insert the post component into the DOM

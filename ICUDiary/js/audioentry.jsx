@@ -202,7 +202,7 @@ class Audio extends React.Component {
           </div>
           <Dictaphone></Dictaphone>
           <br/>
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
             <input type="submit" name="createEntry" value="Create Entry"/>
           </div>
         </form>
