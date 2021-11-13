@@ -2,7 +2,7 @@
 
 {% block body %}
     <form action="/accounts/create/" id="create" onsubmit="return validateForm()" method="post" name="create" enctype="multipart/form-data">
-        <table>
+        <table style="font-size: 25px">
             <tr>
                 <td>Photo </td>
                 <td><input type="file" name="file"></td>
@@ -27,27 +27,27 @@
             <span id="isStrong" style="color: red" class="d-flex justify-content-center"></span>
         </table>
         <!-- <span>Role </span><input type="text" name="role"/> -->
-        <label for="role"> Select your role:</label>
+        <label for="role" style="font-size: 25px"> Select your role:</label>
         <select name="role" id="role" required>
             <option value="Patient">Patient</option>
             <!-- <option value="Superuser">Superuser</option> -->
             <option value="User">User</option>
         </select>
         <br>
-        <label for="question"> Select a security question:</label>
+        <label for="question" style="font-size: 25px"> Select a security question:</label>
         <select name="question" id="question" required>
             <option value="What was the name of your first pet? ">What was the name of your first pet?</option>
             <option value="In what city were you born? ">In what city were you born?</option>
             <option value="What was the name of your elementary school? ">What was the name of your elementary school?</option>
             <option value="What is your middle name? ">What is your middle name?</option>
         </select>
-        <span>Answer: </span><input type="text" name="answer" required/>
+        <span style="font-size: 25px">Answer: </span><input type="text" name="answer" required/>
         <br>
         <br>
         <input class="btn btn-outline-primary btn-block btn-lg " style="background-color: lightgray" type="submit" name="signup" value="Sign Up" />
         <br>
     </form>
-    <p>
+    <p style="font-size: 25px">
         Have an account? <a href="/accounts/login/"><b>Log in</b></a>
     </p>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>

@@ -85,6 +85,7 @@ def newentry():
         if request.form['type'] == 'audio':
             print(request.files)
             print(request.form)
+            print("ksdjafkjsdfkjahdsf")
 
             fileobj = request.files["file"]
             filename = fileobj.filename

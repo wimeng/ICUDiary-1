@@ -125,21 +125,23 @@ class Audio extends React.Component {
   };
 
   submitEntry = (event) => {
-    const { title, patient, transcript, file } = this.state;
     event.preventDefault();
-    var formData = new FormData();
+    if (!this.state.isRecording) {
+      const { title, patient, transcript, file } = this.state;
+      var formData = new FormData();
 
-    formData.append("type", "audio");
-    formData.append("title", title);
-    formData.append("patient", patient);
-    formData.append("transcript", document.getElementById("transcriptText").innerHTML);
-    formData.append("file", file);
+      formData.append("type", "audio");
+      formData.append("title", title);
+      formData.append("patient", patient);
+      formData.append("transcript", document.getElementById("transcriptText").innerHTML);
+      formData.append("file", file);
 
-    var request = new XMLHttpRequest();
-    request.open("POST", "/newentry/");
-    request.send(formData);
-    window.location.replace("/archive/");
-    <Navigate to="/archive/"/>
+      var request = new XMLHttpRequest();
+      request.open("POST", "/newentry/", true);
+      let temp = request.send(formData);
+    }
+    //window.location.assign("/archive/");
+    //<Navigate to="/archive/"/>
 
 
 

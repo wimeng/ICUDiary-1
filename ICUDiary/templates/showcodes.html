@@ -8,12 +8,12 @@
     </form>
     {% if show %}
         <br>
-        <div class="text-center">
+        <div class="text-center" style="font-size: 25px">
             Here is your code! Copy and share it with people to let them make diary entries!
         </div>
         <br>
         <div align="center">
-            <span>Patient Code: </span> 
+            <span style="font-size: 25px">Patient Code: </span> 
             <span id="patientCode">{{patientcode}}</span> <input type="image" src="{{url_for('static_func', file = 'copy.png')}}" onclick="copyPatientCode()" height="25px" width="25px"></input>
         </div>
         <!-- <br>

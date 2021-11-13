@@ -2,17 +2,17 @@
 
 {% block body %}
     <form action="/patientcode/" method="post" enctype="multipart/form-data">
-        <span>Patient Code </span><input type="text" name="patientcode">
+        <span style="font-size: 25px">Patient Code </span><input type="text" name="patientcode">
         <br>
-        <input type="submit" name="signup" value="submit"/>
+        <input class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" type="submit" name="signup" value="Submit"/>
         <br>
     </form>
     {% if existing %}
-        <span>This patient already exists in your records.</span>
+        <span style="font-size: 25px">This patient already exists in your records.</span>
         <br>
     {% endif %}
-    {% for patient in patients %}
-        <span>{{patient}}</span>
-        <br>
-    {% endfor %}
+    {% if curr_patient %}
+    <br>
+        <span style="font-size: 25px">Patient {{curr_patient}} has been added!</span>
+    {% endif %}
 {% endblock %}}

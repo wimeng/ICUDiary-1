@@ -21,34 +21,44 @@
     </div>
     <br>
     <br>
-    {% for entry in entries %}
+    {% if entries %}
+        {% for entry in entries %}
+            <div style="background-color: lightgray; border-color: grey; border-style: double; text-align: center;">
+                <h3 style="font-weight: bold; text-align: center;">{{entry.entryname}}</h3>
+                <div class = "">
+                    {% if entry.entrytext[-4:] == '.mp3' %}
+                    <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls' class = "text-center"></audio>
+                    <br>
+                    <p>{{entry.transcription}}</p>
+                    <br>
+                    {% else %}
+                    <p class = "pl-5 pr-5">{{entry.entrytext}}</p>
+                    {% endif %}
+                </div>
+                <div style="text-align: center;">
+                    {% if entry.photo != "" %}
+                        <img src="{{url_for('file_func', file = entry.photo)}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
+                    {% else %}
+                        <img src="{{url_for('static_func', file = 'Default.png')}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
+                    {% endif %}
+                    <span style="font-weight: bold">{{entry.firstname}} {{entry.lastname}}</span>
+                    <br>
+                    <span style="font-style: italic">Time of Entry: 
+                        {{entry.created}}</span>
+                    <br>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+    {% elif role == "Patient" %}
         <div style="background-color: lightgray; border-color: grey; border-style: double;">
-            <h3 style="font-weight: bold; text-align: center;">{{entry.entryname}}</h3>
-            <div class = "">
-                {% if entry.entrytext[-4:] == '.mp3' %}
-                <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls' class = "text-center"></audio>
-                <br>
-                <p>{{entry.transcription}}</p>
-                <br>
-                {% else %}
-                <p class = "pl-5 pr-5">{{entry.entrytext}}</p>
-                {% endif %}
-            </div>
-            <div style="text-align: center;">
-                {% if entry.photo != "" %}
-                    <img src="{{url_for('file_func', file = entry.photo)}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
-                {% else %}
-                    <img src="{{url_for('static_func', file = 'Default.png')}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
-                {% endif %}
-                <span style="font-weight: bold">{{entry.firstname}} {{entry.lastname}}</span>
-                <br>
-                <span style="font-style: italic">Time of Entry: 
-                    {{entry.created}}</span>
-                <br>
-            </div>
-        </div>
-        <br>
-    {% endfor %}
+            <p style="font-size: 25px; font-weight: bold; text-align: center;"> Your archive is empty. Share your patient code to receive messages! </p>
+        </div> 
+    {% else %}
+        <div style="background-color: lightgray; border-color: grey; border-style: double;">
+            <p style="font-size: 25px; font-weight: bold; text-align: center;"> Your archive is empty. Messages you send will appear here! </p>
+        </div> 
+    {% endif %}
 
     <!-- {% for entry in audio_entries %}
         {{entry.entryname}}

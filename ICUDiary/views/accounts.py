@@ -161,7 +161,7 @@ def create_user():
             return flask.redirect("/patientcode/")
             pass
             
-        return flask.redirect("/")
+        return flask.redirect("/archive")
 
     return flask.render_template("create.html")
 
@@ -215,7 +215,7 @@ def login():
         # store user as current user
         flask.session["user"] = username
 
-        return flask.redirect("/")
+        return flask.redirect("/archive")
         
     else:
         context = { "incorrect" : False }
@@ -522,28 +522,29 @@ def patientcode():
                 (flask.session["user"], pcode)
             )
 
-        patientlist = []
+        # patientlist = []
         
-        patientcodelist = connect.execute(
-            "SELECT patientcode FROM patient "
-            "WHERE username = ? ",
-            (flask.session["user"],)
+        # patientcodelist = connect.execute(
+        #     "SELECT patientcode FROM patient "
+        #     "WHERE username = ? ",
+        #     (flask.session["user"],)
+        # ).fetchall()
+
+        # for patient in patientcodelist:
+            # patientcode = patient['patientcode']   
+
+        patientname = connect.execute(
+            "SELECT users.username FROM users "
+            "JOIN patient ON (patient.username = users.username) "
+            "WHERE patientcode = ? AND role = 'Patient'",
+            (pcode,)
         ).fetchall()
 
-        for patient in patientcodelist:
-            patientcode = patient['patientcode']   
-
-            patientname = connect.execute(
-                "SELECT users.username FROM users "
-                "JOIN patient ON (patient.username = users.username) "
-                "WHERE patientcode = ? AND role = 'Patient'",
-                (patientcode,)
-            ).fetchall()
-
-            patientlist.append(patientname[0]['username'])
+            # patientlist.append(patientname[0]['username'])
             
 
-        context['patients'] = patientlist
+        # context['patients'] = patientlist
+        context["curr_patient"] = patientname[0]['username']
 
     return flask.render_template("patientcode.html", **context)
 
