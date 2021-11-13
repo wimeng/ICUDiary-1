@@ -45,11 +45,11 @@ class Form extends React.Component {
       <div className="buttons" style={{backgroundColor: "#F5F5F5", borderStyle: "solid", borderColor: "#E5E5E5", marginLeft: "30%", marginRight: "30%"}}>
         <div>
             <span class="d-flex justify-content-center" style={{paddingTop: "10px", }}>
-                <input className="btn btn-outline-info my-2 my-sm-0" type="submit" value="Text Entry" onClick={this.handleTextClick}/>
+                <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray"}} type="submit" value="Text Entry" onClick={this.handleTextClick}/>
             </span>
             <br></br>
             <span class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
-                <input className="btn btn-outline-info my-2 my-sm-0" type="submit" value="Audio Entry" onClick={this.handleAudioClick}/>
+                <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray", }} type="submit" value="Audio Entry" onClick={this.handleAudioClick}/>
             </span>
           {entryType === "text" && <Text/>}
 

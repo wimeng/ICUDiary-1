@@ -158,7 +158,7 @@ def create_user():
         elif request.form["role"] == "Superuser":
             return flask.redirect("/accounts/superuser/")
         else:
-            return flask.redirect("/accounts/patientcode/")
+            return flask.redirect("/patientcode/")
             pass
             
         return flask.redirect("/")
@@ -221,7 +221,7 @@ def login():
         context = { "incorrect" : False }
         return flask.render_template("login.html", **context)
 
-@ICUDiary.app.route('/accounts/password/', methods=['POST', 'GET'])
+@ICUDiary.app.route('/password/', methods=['POST', 'GET'])
 def edit_password():
     """Edit pass page."""
     if logged() is False:
@@ -282,11 +282,11 @@ def edit_password():
             "SET password = ? "
             "WHERE username = ? ", (password_db_string, flask.session["user"],)
         )
-        return flask.redirect("/accounts/edit/")
+        return flask.redirect("/edit/")
 
     context["logname"] = flask.session["user"]
     return flask.render_template("password.html", **context)
-@ICUDiary.app.route('/accounts/edit/', methods=['GET', 'POST'])
+@ICUDiary.app.route('/edit/', methods=['GET', 'POST'])
 
 def edit():
     """Edit user page."""
@@ -481,7 +481,7 @@ def superuser():
     
     return flask.render_template("superuser.html", **context)
 
-@ICUDiary.app.route('/accounts/patientcode/', methods=['POST', 'GET'])
+@ICUDiary.app.route('/patientcode/', methods=['POST', 'GET'])
 def patientcode():
     """Patient account association."""
     context = common_context()

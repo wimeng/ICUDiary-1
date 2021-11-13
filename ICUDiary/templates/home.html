@@ -5,14 +5,14 @@
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/newentry/"><b class = "h1">Make an entry</b></a>
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/archive/"><b class = "h1">View archive</b></a>
             {% if role == 'User' %}
-            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/accounts/patientcode/"><b class = "h1">Enter patient codes</b></a>
+            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/patientcode/"><b class = "h1">Enter patient codes</b></a>
             {% elif role == 'Superuser' and not usesPatient %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/accounts/superuser/"><b class = "h1">Enter codes</b></a>
             {% elif role == 'Superuser' and usesPatient %}
             {% else %}
             <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href="/showcodes/"><b class = "h1">Access codes</b></a>
             {% endif %}
-            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href= "/accounts/edit/"><b class = "h1">Edit profile</b></a>
+            <a class="btn btn-outline-primary btn-block btn-lg" style="background-color: lightgray" href= "/edit/"><b class = "h1">Edit profile</b></a>
         </div>
     <br>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>

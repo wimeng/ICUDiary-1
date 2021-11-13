@@ -26,7 +26,7 @@
 
                         {% if role == 'User' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="/accounts/patientcode/">Enter Patient Codes</a>
+                                <a class="nav-link" href="/patientcode/">Enter Patient Codes</a>
                             </li>
                         {% elif role == 'Superuser' and not usesPatient %}
                             <li class="nav-item">
@@ -39,7 +39,7 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/accounts/edit/">Edit Profile</a>
+                            <a class="nav-link" href="/edit/">Edit Profile</a>
                         </li>
                     </ul>
 

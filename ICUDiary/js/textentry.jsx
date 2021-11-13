@@ -82,7 +82,7 @@ handleTitleChange(event) {
             </div>
             <p class="d-flex justify-content-center">Characters Remaining: {this.state.maxChars}</p> 
             <div class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
-              <input type="submit" name="createEntry" value="Create Entry"/>
+              <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray", }} type="submit" name="createEntry" value="Create Entry"/>
             </div>
         </form>
       </div>
