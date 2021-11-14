@@ -6,28 +6,28 @@ In order to properly run our software, you need to have python (>=3.6) and npm (
 ## Steps to run
 1. Open up ICUDiary-1 folder in terminal
 2. Run the following commands:
-'''bash
+```bash
 python3 -m venv env
-'''
-'''bash
+```
+```bash
 source env/bin/activate
-'''
-'''bash
+```
+```bash
 pip install -r requirements.txt
-'''
+```
 pip install -e .
-'''
-'''bash
+```
+```bash
 npm ci . 
-'''
-'''bash
+```
+```bash
 npx webpack
-'''
-'''bash
+```
+```bash
 ./bin/ICUDiarydb create
-'''
-'''bash
+```
+```bash
 ./bin/ICUDiaryrun
-'''
+```
 3. Open up localhost:8000 on your browser
 
