@@ -1,12 +1,33 @@
 # ICUDiary-1
-to run our website:
-1. Open up ICUDiary-1 folder in terminal
-2. Run pip install -r requirements.txt
-3. Run pip install -e .
-4. Run python3 -m venv env
-5. Run the command: ' source env/bin/activate '
-6. 
-. Run the script file: ' ./bin/ICUDiaryrun '
-. Open up localhost:8000 on your browser
 
-If you have any further questions, contact wimeng@umich.edu
+## Prerequisites
+In order to properly run our software, you need to have python (>=3.6) and npm (>=8.0.0) installed onto your system.
+
+## Steps to run
+1. Open up ICUDiary-1 folder in terminal
+2. Run the following commands:
+'''bash
+python3 -m venv env
+'''
+'''bash
+source env/bin/activate
+'''
+'''bash
+pip install -r requirements.txt
+'''
+pip install -e .
+'''
+'''bash
+npm ci . 
+'''
+'''bash
+npx webpack
+'''
+'''bash
+./bin/ICUDiarydb create
+'''
+'''bash
+./bin/ICUDiaryrun
+'''
+3. Open up localhost:8000 on your browser
+
