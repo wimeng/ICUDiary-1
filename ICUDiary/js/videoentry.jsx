@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Text extends React.Component {
+class Video extends React.Component {
   /* Display buttons to choose form
    * Reference on forms https://facebook.github.io/react/docs/forms.html
    */
@@ -10,9 +10,8 @@ class Text extends React.Component {
     // Initialize mutable state
     super(props);
 
-    this.state = { 
-        maxChars: 0,
-        textInput: "",
+    this.state = {
+        caption: "",
         entryTitle: "",
         patientDropdown: []
     };
@@ -30,8 +29,7 @@ componentDidMount() {
       })
       .then((data) => {
         this.setState({
-          maxChars: 1000,
-          textInput: "",
+          caption: "",
           entryTitle: "",
           patientDropdown : data.patients,
         });
@@ -41,12 +39,9 @@ componentDidMount() {
 
 handleChange(event) {
     event.preventDefault();
-    if (1000 - event.target.value.length >= 0) {
-        this.setState(() => ({
-            textInput: event.target.value,
-            maxChars: 1000 - event.target.value.length,
-        }));
-    }
+    this.setState(() => ({
+        caption: event.target.value,
+    }))
   }
 
 handleTitleChange(event) {
@@ -65,22 +60,25 @@ handleTitleChange(event) {
       <br/>
       <br/>
         <form action="/newentry/" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="type" value="text"/>
+            <input type="hidden" name="type" value="video"/>
             <div class="d-flex justify-content-center">
               <label for="patient"> Select a patient:</label>
               <select name="patient" id="patient" required>
                   {options}
               </select>
             </div>
-            <br/>
             <div class="d-flex justify-content-center">
                 <input class="mr-sm-2" type="text" placeholder= "Entry Title" name="entrytitle" value={this.state.entryTitle} onChange={(e) => {this.handleTitleChange(e)}}/>
             </div>
             <br/>
             <div class="d-flex justify-content-center">
-                <textarea style={{resize: 'both', width: "400px", height: "200px"}} type="text" placeholder="Type Your Entry Here" name="entry" value={this.state.textInput} onChange={(e) => {this.handleChange(e)}}/>              
+                Upload video: <input type="file" name="file" required/>
             </div>
-            <p class="d-flex justify-content-center">Characters Remaining: {this.state.maxChars}</p> 
+            <br/>
+            <div class="d-flex justify-content-center">
+                <input type="text" placeholder="Type Your Caption" name="entry" value={this.state.caption} onChange={(e) => {this.handleChange(e)}}/>              
+            </div>
+            <br/>
             <div class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
               <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray", }} type="submit" name="createEntry" value="Create Entry"/>
             </div>
@@ -90,4 +88,4 @@ handleTitleChange(event) {
   }
 }
 
-export default Text;
+export default Video;

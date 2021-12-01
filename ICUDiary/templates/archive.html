@@ -24,28 +24,40 @@
     {% if entries %}
         {% for entry in entries %}
             <div style="background-color: lightgray; border-color: grey; border-style: double; text-align: center;">
-                <h3 style="font-weight: bold; text-align: center;">{{entry.entryname}}</h3>
+                <h3 style="font-weight: bold; text-align: center; font-size: xxx-large">{{entry.entryname}}</h3>
                 <div class = "">
                     {% if entry.entrytext[-4:] == '.mp3' %}
-                    <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls' class = "text-center"></audio>
-                    <br>
-                    <p>{{entry.transcription}}</p>
-                    <br>
+                        <audio src="{{url_for('file_func', file=entry.entrytext)}}" controls='controls' class = "text-center"></audio>
+                        <br>
+                        <p style="font-size: xx-large">{{entry.transcription}}</p>
+                    {% elif entry.entrytext[-4:] == '.png' or entry.entrytext[-4:] == '.jpg'%}
+                        <img src="{{url_for('file_func', file=entry.entrytext)}}" width="200" height="200">
+                        <br>
+                        <p class = "pl-5 pr-5" style="font-size: xx-large">{{entry.transcription}}</p>
+                    {% elif entry.entrytext[-4:] == '.mp4' or entry.entrytext[-4:] == '.mov'%}
+                    <video controls width="250">
+                        <source src="{{url_for('file_func', file=entry.entrytext)}}"/>
+                    </video>
+                        <p class = "pl-5 pr-5" style="font-size: xx-large">{{entry.transcription}}</p>
                     {% else %}
-                    <p class = "pl-5 pr-5">{{entry.entrytext}}</p>
+                        <p class = "pl-5 pr-5" style="font-size: xx-large">{{entry.entrytext}}</p>
                     {% endif %}
                 </div>
                 <div style="text-align: center;">
                     {% if entry.photo != "" %}
-                        <img src="{{url_for('file_func', file = entry.photo)}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
+                        <img src="{{url_for('file_func', file = entry.photo)}}" width="50" height="50" style="border-radius: 75px;" alt="Profile Picture">
                     {% else %}
-                        <img src="{{url_for('static_func', file = 'Default.png')}}" width="25" height="25" style="border-radius: 75px;" alt="Profile Picture">
+                        <img src="{{url_for('static_func', file = 'Default.png')}}" width="50" height="50" style="border-radius: 75px;" alt="Profile Picture">
                     {% endif %}
-                    <span style="font-weight: bold">{{entry.firstname}} {{entry.lastname}}</span>
+                    <span style="font-weight: bold; font-size: larger">{{entry.firstname}} {{entry.lastname}}</span>
                     <br>
-                    <span style="font-style: italic">Time of Entry: 
+                    <span style="font-style: italic; font-size: larger">Time of Entry: 
                         {{entry.created}}</span>
                     <br>
+                    {% if role == "User" %}
+                        <span style="font-style: italic; font-size: larger">Sent to: {{entry.patient}}</span>
+                        <br>
+                    {% endif %}
                 </div>
             </div>
             <br>

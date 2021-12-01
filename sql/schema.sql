@@ -27,7 +27,7 @@ CREATE table patient(
 CREATE TABLE text_entries(
   entryid INTEGER PRIMARY KEY,
   entryname VARCHAR(100) NOT NULL,
-  entrytext VARCHAR(500) NOT NULL,
+  entrytext VARCHAR(1000) NOT NULL,
   writer VARCHAR(20) NOT NULL,
   patient VARCHAR(20) NOT NULL,
   created DATETIME DEFAULT CURRENT_TIMESTAMP,

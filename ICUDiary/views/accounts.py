@@ -64,6 +64,8 @@ def create_user():
     # and redirect to / page
     # check if username already exists
     # and password is not empty, otherwise abort(403)
+    context = {}
+    context["user_exists"] = False
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -80,7 +82,8 @@ def create_user():
 
         # check if user already exists
         if len(users) > 0:
-            abort(409)
+            context["user_exists"] = True
+            return flask.render_template("create.html", **context)
 
         # check for empty password
         if len(password) == 0:
@@ -163,7 +166,7 @@ def create_user():
             
         return flask.redirect("/archive")
 
-    return flask.render_template("create.html")
+    return flask.render_template("create.html", **context)
 
 @ICUDiary.app.route('/accounts/login/', methods=['POST', 'GET'])
 def login():
@@ -286,8 +289,8 @@ def edit_password():
 
     context["logname"] = flask.session["user"]
     return flask.render_template("password.html", **context)
+    
 @ICUDiary.app.route('/edit/', methods=['GET', 'POST'])
-
 def edit():
     """Edit user page."""
     if logged() is False:
@@ -296,6 +299,7 @@ def edit():
     connect = ICUDiary.model.get_db()
     context = common_context()
     context['perms'] = False
+    
     if request.method == "POST":
         photoicon = request.files["file"]
         first_name = request.form["firstname"]
@@ -307,10 +311,10 @@ def edit():
             cur = connect.execute(
                 "SELECT filename FROM users "
                 "WHERE username = ? ", (flask.session["user"],)
-            )
+            ).fetchone()
 
-            to_delete = cur.fetchone()
-            os.remove((config.UPLOAD_FOLDER) / to_delete['filename'])
+            if cur['filename']:
+                os.remove((config.UPLOAD_FOLDER) / cur['filename'])
 
             fileobj = request.files["file"]
             filename = fileobj.filename
@@ -365,6 +369,25 @@ def edit():
     context["logname"] = flask.session["user"]
 
     return flask.render_template("edit.html", **context)
+
+@ICUDiary.app.route('/delete/', methods=['POST', 'GET'])
+def delete_account():
+    """Delete Account."""
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
+    
+    connect = ICUDiary.model.get_db()
+
+    connect.execute(
+        "DELETE FROM users "
+        "WHERE username = ?",
+        (flask.session['user'], )
+    )
+        
+    # Clear session and redirect to login
+    flask.session.clear()
+
+    return flask.redirect("/accounts/login/")
 
 @ICUDiary.app.route('/accounts/logout/', methods=['POST', 'GET'])
 def logout():

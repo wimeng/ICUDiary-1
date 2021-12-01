@@ -83,9 +83,6 @@ def newentry():
             return flask.redirect("/archive/")
         
         if request.form['type'] == 'audio':
-            print(request.files)
-            print(request.form)
-            print("ksdjafkjsdfkjahdsf")
 
             fileobj = request.files["file"]
             filename = fileobj.filename
@@ -119,6 +116,74 @@ def newentry():
 
             return flask.redirect("/archive/")
 
+        if request.form['type'] == 'photo':
+            fileobj = request.files["file"]
+            filename = fileobj.filename
+            # Compute base name (filename without directory).
+            # We use a UUID to avoid
+            # clashes with existing files, and ensure
+            # that the name is compatible with the
+            # filesystem.
+            uuid_basename = "{stem}{suffix}".format(
+                stem=uuid.uuid4().hex,
+                suffix=pathlib.Path(filename).suffix
+            )
+            # Save to disk
+            path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobj.save(path)
+
+            entry_title = request.form['entrytitle']
+            entry_audio = path
+            selected_patient = request.form['patient']
+            transcript = request.form['entry']
+
+            connect.execute(
+                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient, transcription) "
+                "VALUES (?, ?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, transcript)
+            )
+
+            connect.execute(
+                "UPDATE patient "
+                "SET notifcount = notifcount + 1 "
+                "WHERE username = ? ",(selected_patient,)
+            )
+
+            return flask.redirect("/archive/")
+
+        if request.form['type'] == 'video':
+            fileobj = request.files["file"]
+            filename = fileobj.filename
+            # Compute base name (filename without directory).
+            # We use a UUID to avoid
+            # clashes with existing files, and ensure
+            # that the name is compatible with the
+            # filesystem.
+            uuid_basename = "{stem}{suffix}".format(
+                stem=uuid.uuid4().hex,
+                suffix=pathlib.Path(filename).suffix
+            )
+            # Save to disk
+            path = ICUDiary.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobj.save(path)
+
+            entry_title = request.form['entrytitle']
+            entry_audio = path
+            selected_patient = request.form['patient']
+            transcript = request.form['entry']
+
+            connect.execute(
+                "INSERT INTO audio_entries(entryname, entryaudio, writer, patient, transcription) "
+                "VALUES (?, ?, ?, ?, ?) ", (entry_title, uuid_basename, flask.session['user'], selected_patient, transcript)
+            )
+
+            connect.execute(
+                "UPDATE patient "
+                "SET notifcount = notifcount + 1 "
+                "WHERE username = ? ",(selected_patient,)
+            )
+
+            return flask.redirect("/archive/")
+    print("what")
     return flask.render_template("recording.html", **context)
 
 # THE REAL ENDPOINT FOR THIS IS /archive/, THIS IS TEMPORARILY SET FOR THE DEMO
@@ -140,7 +205,6 @@ def archive():
         )
     
         curr_role = role.fetchall()[0]['role']
-        print(curr_role)
 
         if curr_role == "User":
             message = connect.execute(
@@ -265,7 +329,6 @@ def archive():
                 "WHERE username = ?", (flask.session["user"],)
         )
         curr_role = role.fetchall()[0]['role']
-        print(curr_role)
 
         if (request.form["sort"] == "newest"):
 
