@@ -56,6 +56,25 @@ def common_context():
         
     return context
 
+@ICUDiary.app.route("/deleteentry/", methods=['POST'])
+def deleteentry():
+    """Delete an entry."""
+    if logged() is False:
+        return flask.redirect("/accounts/login/")
+    connect = ICUDiary.model.get_db()
+    entryid = request.form["entryid"]
+    table = request.form["whichtable"]
+    if table == "text":
+        connect.execute(
+            "DELETE FROM text_entries WHERE entryid == ? ", (entryid,)
+        )
+    else:
+        connect.execute(
+            "DELETE FROM audio_entries WHERE entryid == ? ", (entryid,)
+        )
+    
+    return flask.redirect("/archive/")
+
 @ICUDiary.app.route("/newentry/", methods=['POST', 'GET'])
 def newentry():
     """Send file."""

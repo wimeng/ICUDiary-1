@@ -58,6 +58,15 @@
                         <span style="font-style: italic; font-size: larger">Sent to: {{entry.patient}}</span>
                         <br>
                     {% endif %}
+                    <form action="/deleteentry/" method="POST">
+                        <input type="hidden" name="entryid" value="{{entry.entryid}}"/>
+                        {% if entry.entrytext[-4:] == '.png' or entry.entrytext[-4:] == '.mp3' or entry.entrytext[-4:] == '.jpg' or entry.entrytext[-4:] == '.mov' or entry.entrytext[-4:] == '.mp4' %}
+                            <input type="hidden" name="whichtable" value="audio">
+                        {% else %}
+                            <input type="hidden" name="whichtable" value="text">
+                        {% endif %}
+                        <input type="image" src="{{url_for('static_func', file = 'trash.png')}}" alt="" width="35" height="35" style="background-color: lightgray" type="submit" name="deleteEntry" value="Delete Entry" onclick="return confirm('Are you sure you want to delete this entry?')"/>
+                    </form>
                 </div>
             </div>
             <br>
@@ -86,13 +95,10 @@
             <input type="submit" name="logout" value="Logout"/>
           </form>
     </p> -->
-
-    <!-- <script type="text/javascript">
-        function newest() {
-            
+    <script>
+        function warning() {
+            confirm("Are you sure you want to delete this entry?")
         }
-        function oldest() {
+    </script>
 
-        }
-    </script> -->
 {% endblock %}

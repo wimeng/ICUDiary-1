@@ -17,7 +17,8 @@ const Dictaphone = () => {
   let {
     transcript,
     listening,
-    browserSupportsSpeechRecognition
+    browserSupportsSpeechRecognition,
+    finalTranscript
   } = useSpeechRecognition();
   startListening = () => SpeechRecognition.startListening({ continuous: true });
 
@@ -27,8 +28,8 @@ const Dictaphone = () => {
 
   return (
     <div class="d-flex justify-content-center">
-      <div id="transcriptText">{transcript.toLowerCase()}</div>
-      {/* <textarea style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcript.toLowerCase()}/> */}
+      {/* <div id="transcriptText">{transcript.toLowerCase()}</div> */}
+      <textarea id="transcriptText" style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcript.toLowerCase()}/>
     </div>
   );
 };
@@ -84,7 +85,7 @@ class Audio extends React.Component {
         this.setState({
           patientDropdown : data.patients,
           patient: (data.patients ? data.patients[0].username : ''),
-          transcript: ''
+          transcription: ''
         });
       })
       .catch((error) => console.log(error));
@@ -116,7 +117,7 @@ class Audio extends React.Component {
           lastModified: Date.now(),
         });
         SpeechRecognition.stopListening()
-        this.setState({ file: file, isRecording: false });
+        this.setState({ file: file, isRecording: false, transcription: document.getElementById("transcriptText").innerHTML});
       }).catch((e) => console.log(e));
   };
 
@@ -127,18 +128,32 @@ class Audio extends React.Component {
   submitEntry = (event) => {
     event.preventDefault();
     if (!this.state.isRecording) {
-      const { title, patient, transcript, file } = this.state;
+      const { title, patient, transcription, file } = this.state;
       var formData = new FormData();
 
       formData.append("type", "audio");
       formData.append("title", title);
       formData.append("patient", patient);
-      formData.append("transcript", document.getElementById("transcriptText").innerHTML);
+      formData.append("transcript", transcription);
       formData.append("file", file);
 
       var request = new XMLHttpRequest();
       request.open("POST", "/newentry/", true);
+      console.log('OPENED: ', request.status);
+
+      request.onprogress = function () {
+        console.log('LOADING: ', request.status);
+      };
+
+      request.onload = function () {
+        console.log('DONE: ', request.status);
+        window.location.assign("/archive/");
+      };
+
       let temp = request.send(formData);
+      
+      // while (request.status == 0) {}
+      // window.location.assign("/archive/");
     }
     //window.location.assign("/archive/");
     //<Navigate to="/archive/"/>
@@ -169,12 +184,12 @@ class Audio extends React.Component {
   handleTranscriptChange(event) {
     event.preventDefault();
     this.setState(() => ({
-        transcript: event.target.value,
+        transcription: event.target.value,
     }));
   }
 
   render() {
-    let { patientDropdown, transcript } = this.state;
+    let { patientDropdown, transcription, isRecording } = this.state;
     return (
       <div>
         <form onSubmit={(e) => this.submitEntry(e)} method="post" enctype="multipart/form-data">
@@ -202,7 +217,13 @@ class Audio extends React.Component {
           <div class="d-flex justify-content-center">
             Transcription:
           </div>
-          <Dictaphone></Dictaphone>
+          {console.log(!isRecording)}
+          { (!isRecording && transcription == "") || (isRecording) ?
+            <Dictaphone></Dictaphone> :
+          <div class="d-flex justify-content-center">
+            <textarea style={{resize: "both", height: "300px", width: "300px"}} type="text" name="transcript" value={transcription} onChange={(e) => this.handleTranscriptChange(e)}/>
+          </div>
+          }
           <br/>
           <div class="d-flex justify-content-center" style={{paddingBottom: "10px", }}>
             <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray", }} type="submit" name="createEntry" value="Create Entry"/>
