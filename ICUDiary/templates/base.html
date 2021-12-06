@@ -5,7 +5,11 @@
         <title>ICUDiary</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     </head>
-    <body id="background" style="background-image: url('../static/image/back.png')">
+    {% if 'mode' not in session %}
+        <body id="background" style="background-image: url('../static/image/back.png')">
+    {% else %}
+        <body id="background" style="background-image: {{session['mode']}}">
+    {% endif %}
         <nav class="navbar navbar-expand-lg navbar-light bg-light" style = "background-color: #e3f2fd !important;">
             <div class="container-fluid">
                 <img src="{{url_for('static_func', file = 'DiaryLogo.png')}}" alt="" class="d-inline-block align-middle img-fluid">
@@ -122,12 +126,20 @@
         </script>
         <script>
             function changeBackground() {
+                let mode = ""
+                
                 if (document.getElementById("background").style.backgroundImage === 'url("../static/image/darkback.png")'){
                     document.getElementById("background").style.backgroundImage = "url('../static/image/back.png')";
+                    mode = "url('../static/image/back.png')";
                 }
                 else {
                     document.getElementById("background").style.backgroundImage = "url('../static/image/darkback.png')";
+                    mode = "url('../static/image/darkback.png')";
                 }
+                const formData = new FormData()
+                formData.append('mode', mode)
+                console.log(mode)
+                fetch("/changemode/", { credentials: 'same-origin', method: 'POST', body: formData})
             }
         </script>
 

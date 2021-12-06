@@ -91,6 +91,14 @@ def help():
     context = common_context()
     return flask.render_template("info.html", **context)
 
+
+@ICUDiary.app.route("/changemode/", methods=['POST'])
+def changemode():
+    print(request.form)
+    flask.session["mode"] = request.form["mode"]
+    print(flask.session["mode"])
+    return "", 200
+
 def logged():
     """User logged in check."""
     return "user" in flask.session
