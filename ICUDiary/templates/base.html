@@ -116,8 +116,11 @@
         </h1>
         -->
      
-        
-        <div class = "container">
+        {% if 'mode' in session and session['mode'] == "url('../static/image/darkback.png')" %}
+            <div id = "container" class = "container" style="color: white">
+        {% else %}
+            <div id = "container" class = "container" style="color: black">
+        {% endif %}
             {% block body %}
             {% endblock %}
         </div>
@@ -130,10 +133,12 @@
                 
                 if (document.getElementById("background").style.backgroundImage === 'url("../static/image/darkback.png")'){
                     document.getElementById("background").style.backgroundImage = "url('../static/image/back.png')";
+                    document.getElementById("container").style.color = "black";
                     mode = "url('../static/image/back.png')";
                 }
                 else {
                     document.getElementById("background").style.backgroundImage = "url('../static/image/darkback.png')";
+                    document.getElementById("container").style.color = "white";
                     mode = "url('../static/image/darkback.png')";
                 }
                 const formData = new FormData()

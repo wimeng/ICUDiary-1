@@ -23,7 +23,7 @@
     <br>
     {% if entries %}
         {% for entry in entries %}
-            <div style="background-color: lightgray; border-color: grey; border-style: double; text-align: center;">
+            <div style="background-color: lightgray; border-color: grey; border-style: double; text-align: center; color: black">
                 <h3 style="font-weight: bold; text-align: center; font-size: xxx-large">{{entry.entryname}}</h3>
                 <div class = "">
                     {% if entry.entrytext[-4:] == '.mp3' %}
@@ -72,11 +72,11 @@
             <br>
         {% endfor %}
     {% elif role == "Patient" %}
-        <div style="background-color: lightgray; border-color: grey; border-style: double;">
+        <div style="background-color: lightgray; border-color: grey; border-style: double; color: black">
             <p style="font-size: 25px; font-weight: bold; text-align: center;"> Your archive is empty. Share your patient code to receive messages! </p>
         </div> 
     {% else %}
-        <div style="background-color: lightgray; border-color: grey; border-style: double;">
+        <div style="background-color: lightgray; border-color: grey; border-style: double; color: black">
             <p style="font-size: 25px; font-weight: bold; text-align: center;"> Your archive is empty. Messages you send will appear here! </p>
         </div> 
     {% endif %}

@@ -58,7 +58,7 @@ class Form extends React.Component {
   render() {
     let { entryType } = this.state;
     return (
-      <div className="buttons" style={{backgroundColor: "#F5F5F5", borderStyle: "solid", borderColor: "#E5E5E5", marginLeft: "30%", marginRight: "30%"}}>
+      <div className="buttons" style={{backgroundColor: "#F5F5F5", borderStyle: "solid", borderColor: "#E5E5E5", marginLeft: "30%", marginRight: "30%", color: "black"}}>
         <div>
             <span class="d-flex justify-content-center" style={{paddingTop: "10px", }}>
                 <input class="btn btn-outline-primary btn-block btn-lg ms-3" style={{backgroundColor: "lightgray"}} type="submit" value="Text Entry" onClick={this.handleTextClick}/>
