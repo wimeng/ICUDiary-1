@@ -615,7 +615,7 @@ def forgotpassword():
                 "WHERE username = ? ", (password_db_string, username,)
             ) 
             flask.session["user"] = username
-            return flask.redirect('/')
+            return flask.redirect('/archive/')
 
     return flask.render_template("resetpassword.html", **context)
 
