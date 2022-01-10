@@ -4,7 +4,7 @@
 This is a website which designed for users to write or speak messages to their loved ones in the ICU, and for patients to read and hear said messages. The website allows its users to create profiles for themselves, and associate themselves with patients by entering their specific code.
 
 ## Prerequisites
-In order to properly run our software, you need to have python (>=3.6) and npm (>=8.0.0) installed onto your system. This website works best on Google Chrome, however it will still run on other browsers. This software will run on any modern operating system.
+In order to properly run our software, you need to have Python (>=3.6) and npm (>=8.0.0) installed onto your system. This website works best on Google Chrome or Firefox, however it will still run on other browsers. This software will run on any modern operating system.
 
 ## Steps to run
 1. Open up ICUDiary-1 folder in terminal
